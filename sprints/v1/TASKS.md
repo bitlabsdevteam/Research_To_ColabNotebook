@@ -46,6 +46,7 @@
   - Files: `apps/api/src/generate/generate.service.ts`, `tests/integration/generate.spec.ts`
   - Completed: 2026-03-25 — GenerateService orchestrates PDF parse → AI generate → notebook build; controller returns .ipynb JSON
 
-- [ ] Task 10: Download and Open-in-Colab UI — frontend result handling (P0)
+- [x] Task 10: Download and Open-in-Colab UI — frontend result handling (P0)
   - Acceptance: After generation completes, UI shows two buttons: "Download .ipynb" (triggers browser download) and "Open in Colab" (opens `colab.research.google.com/notebooks/` with notebook upload). Loading state shown during generation. Error messages displayed on failure.
   - Files: `apps/web/app/components/ResultPanel.tsx`, `apps/web/app/lib/colab.ts`, `apps/web/app/page.tsx`
+  - Completed: 2026-03-25 — ResultPanel with Download + Open in Colab buttons, loading spinner, error display, full page wiring
