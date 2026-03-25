@@ -1,0 +1,105 @@
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+
+let app: INestApplication;
+let baseUrl: string;
+
+async function createApp() {
+  const { AppModule } = await import("../../apps/api/src/app.module");
+  const moduleFixture: TestingModule = await Test.createTestingModule({
+    imports: [AppModule],
+  }).compile();
+
+  app = moduleFixture.createNestApplication();
+  await app.init();
+  await app.listen(0); // random port
+  const address = app.getHttpServer().address();
+  baseUrl = `http://localhost:${address.port}`;
+}
+
+describe("POST /generate", () => {
+  beforeAll(async () => {
+    await createApp();
+  });
+
+  afterAll(async () => {
+    if (app) await app.close();
+  });
+
+  it("returns 400 when no file is uploaded", async () => {
+    const formData = new FormData();
+    formData.append("apiKey", "sk-test");
+
+    const res = await fetch(`${baseUrl}/generate`, {
+      method: "POST",
+      body: formData,
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.message).toMatch(/pdf/i);
+  });
+
+  it("returns 400 when apiKey is missing", async () => {
+    const pdfBuffer = createMinimalPdf();
+    const formData = new FormData();
+    formData.append(
+      "pdf",
+      new Blob([pdfBuffer], { type: "application/pdf" }),
+      "test.pdf"
+    );
+
+    const res = await fetch(`${baseUrl}/generate`, {
+      method: "POST",
+      body: formData,
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.message).toMatch(/apiKey/i);
+  });
+
+  it("returns 400 when file is not a PDF", async () => {
+    const formData = new FormData();
+    formData.append(
+      "pdf",
+      new Blob(["not a pdf"], { type: "text/plain" }),
+      "test.txt"
+    );
+    formData.append("apiKey", "sk-test");
+
+    const res = await fetch(`${baseUrl}/generate`, {
+      method: "POST",
+      body: formData,
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.message).toMatch(/pdf/i);
+  });
+
+  it("accepts a valid PDF with apiKey and returns 200", async () => {
+    const pdfBuffer = createMinimalPdf();
+    const formData = new FormData();
+    formData.append(
+      "pdf",
+      new Blob([pdfBuffer], { type: "application/pdf" }),
+      "paper.pdf"
+    );
+    formData.append("apiKey", "sk-test-key-12345");
+
+    const res = await fetch(`${baseUrl}/generate`, {
+      method: "POST",
+      body: formData,
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.message).toMatch(/received/i);
+    expect(body).toHaveProperty("fileSize");
+    expect(body.fileName).toBe("paper.pdf");
+  });
+});
+
+function createMinimalPdf(): Buffer {
+  return Buffer.from(
+    "%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj\nxref\n0 3\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \ntrailer\n<< /Size 3 /Root 1 0 R >>\nstartxref\n109\n%%EOF"
+  );
+}

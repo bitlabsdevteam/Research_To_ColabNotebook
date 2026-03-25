@@ -17,9 +17,10 @@
   - Files: `apps/web/app/components/PdfUpload.tsx`, `apps/web/app/components/GenerateButton.tsx`
   - Completed: 2026-03-25 — PdfUpload dropzone with validation + GenerateButton disabled/enabled logic
 
-- [ ] Task 4: PDF upload endpoint — NestJS receives and validates PDF files (P0)
+- [x] Task 4: PDF upload endpoint — NestJS receives and validates PDF files (P0)
   - Acceptance: `POST /api/generate` accepts multipart form data with `pdf` file and `apiKey` string. Validates file is PDF and under 20 MB. Returns 400 on invalid input. Stores file temporarily in memory/tmp.
   - Files: `apps/api/src/generate/generate.controller.ts`, `apps/api/src/generate/generate.module.ts`, `apps/api/src/generate/dto/generate.dto.ts`
+  - Completed: 2026-03-25 — GenerateController with Multer file upload, PDF/apiKey validation, 20MB limit
 
 - [ ] Task 5: PDF text extraction service — parse PDF into structured text (P0)
   - Acceptance: Given a PDF buffer, extracts full text with page boundaries. Identifies sections (Abstract, Introduction, Methods, etc.) by heading patterns. Returns structured JSON with sections and raw text. Unit test with a sample PDF passes.
