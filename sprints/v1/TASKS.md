@@ -36,9 +36,10 @@
   - Files: `apps/api/src/ai/ai.service.ts`, `apps/api/src/ai/ai.module.ts`, `apps/api/src/ai/prompts/notebook-prompt.ts`, `tests/unit/ai.service.spec.ts`
   - Completed: 2026-03-25 — AiService with GPT-5.4 prompt, structured system/user messages, JSON cell parsing, error handling
 
-- [ ] Task 8: Notebook builder — assemble .ipynb JSON from generated cells (P0)
+- [x] Task 8: Notebook builder — assemble .ipynb JSON from generated cells (P0)
   - Acceptance: Takes array of cells (markdown/code) and produces valid `.ipynb` JSON (nbformat 4). Includes Colab metadata. Embeds figures as base64 in markdown cells. Unit test validates output against nbformat schema.
   - Files: `apps/api/src/notebook/notebook-builder.service.ts`, `apps/api/src/notebook/notebook.module.ts`, `tests/unit/notebook-builder.spec.ts`
+  - Completed: 2026-03-25 — NotebookBuilderService producing nbformat 4.5 with Colab metadata, line-split sources, figure embedding
 
 - [ ] Task 9: End-to-end pipeline — wire all services into the generate endpoint (P0)
   - Acceptance: `POST /api/generate` with a PDF and API key returns a valid `.ipynb` file. Pipeline: upload → parse → extract figures → AI generate → build notebook → respond. Integration test with mocked AI passes.
