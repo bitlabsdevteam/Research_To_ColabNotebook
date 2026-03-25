@@ -31,9 +31,10 @@
   - Acceptance: Given a PDF buffer, extracts embedded images as base64 PNG strings. Associates figures with page numbers. Returns array of `{ page, base64, caption? }`. Unit test confirms extraction from a test PDF with images.
   - Files: `apps/api/src/pdf-parser/figure-extractor.service.ts`, `tests/unit/figure-extractor.spec.ts`
 
-- [ ] Task 7: AI notebook generation service — GPT-5.4 generates notebook content (P0)
+- [x] Task 7: AI notebook generation service — GPT-5.4 generates notebook content (P0)
   - Acceptance: Takes structured paper content (sections + figures) and API key. Sends structured prompt to GPT-5.4 requesting tutorial-style notebook cells. Returns array of notebook cells (markdown + code). Handles API errors gracefully. Unit test with mocked OpenAI response passes.
   - Files: `apps/api/src/ai/ai.service.ts`, `apps/api/src/ai/ai.module.ts`, `apps/api/src/ai/prompts/notebook-prompt.ts`, `tests/unit/ai.service.spec.ts`
+  - Completed: 2026-03-25 — AiService with GPT-5.4 prompt, structured system/user messages, JSON cell parsing, error handling
 
 - [ ] Task 8: Notebook builder — assemble .ipynb JSON from generated cells (P0)
   - Acceptance: Takes array of cells (markdown/code) and produces valid `.ipynb` JSON (nbformat 4). Includes Colab metadata. Embeds figures as base64 in markdown cells. Unit test validates output against nbformat schema.
