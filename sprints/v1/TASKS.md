@@ -12,9 +12,10 @@
   - Files: `apps/web/app/page.tsx`, `apps/web/app/context/ApiKeyContext.tsx`, `apps/web/app/components/ApiKeyInput.tsx`
   - Completed: 2026-03-25 — ApiKeyContext + ApiKeyInput component with masked input and green "Key set" indicator
 
-- [ ] Task 3: PDF upload UI — drag-and-drop file upload with validation (P0)
+- [x] Task 3: PDF upload UI — drag-and-drop file upload with validation (P0)
   - Acceptance: Dropzone component accepts `.pdf` files only (max 20 MB). Shows file name and size after selection. Upload button is disabled until both API key and PDF are present. Visual feedback on drag-over.
   - Files: `apps/web/app/components/PdfUpload.tsx`, `apps/web/app/components/GenerateButton.tsx`
+  - Completed: 2026-03-25 — PdfUpload dropzone with validation + GenerateButton disabled/enabled logic
 
 - [ ] Task 4: PDF upload endpoint — NestJS receives and validates PDF files (P0)
   - Acceptance: `POST /api/generate` accepts multipart form data with `pdf` file and `apiKey` string. Validates file is PDF and under 20 MB. Returns 400 on invalid input. Stores file temporarily in memory/tmp.

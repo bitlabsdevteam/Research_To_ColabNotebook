@@ -1,6 +1,17 @@
+"use client";
+
+import { useState } from "react";
 import { ApiKeyInput } from "./components/ApiKeyInput";
+import { PdfUpload } from "./components/PdfUpload";
+import { GenerateButton } from "./components/GenerateButton";
+import { useApiKey } from "./context/ApiKeyContext";
 
 export default function Home() {
+  const { apiKey } = useApiKey();
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+
+  const canGenerate = apiKey.length > 0 && pdfFile !== null;
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 gap-8">
       <div className="text-center">
@@ -12,6 +23,8 @@ export default function Home() {
         </p>
       </div>
       <ApiKeyInput />
+      <PdfUpload onFileSelect={setPdfFile} />
+      <GenerateButton disabled={!canGenerate} />
     </main>
   );
 }
