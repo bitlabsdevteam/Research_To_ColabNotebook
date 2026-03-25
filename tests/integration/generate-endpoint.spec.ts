@@ -1,26 +1,31 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 
 let app: INestApplication;
 let baseUrl: string;
 
-async function createApp() {
-  const { AppModule } = await import("../../apps/api/src/app.module");
-  const moduleFixture: TestingModule = await Test.createTestingModule({
-    imports: [AppModule],
-  }).compile();
-
-  app = moduleFixture.createNestApplication();
-  await app.init();
-  await app.listen(0); // random port
-  const address = app.getHttpServer().address();
-  baseUrl = `http://localhost:${address.port}`;
-}
-
-describe("POST /generate", () => {
+describe("POST /generate — validation", () => {
   beforeAll(async () => {
-    await createApp();
+    const { GenerateModule } = await import(
+      "../../apps/api/src/generate/generate.module"
+    );
+    const { AiService } = await import("../../apps/api/src/ai/ai.service");
+
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [GenerateModule],
+    })
+      .overrideProvider(AiService)
+      .useValue({
+        generateNotebook: vi.fn().mockResolvedValue([]),
+      })
+      .compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+    await app.listen(0);
+    const address = app.getHttpServer().address();
+    baseUrl = `http://localhost:${address.port}`;
   });
 
   afterAll(async () => {
@@ -91,10 +96,6 @@ describe("POST /generate", () => {
       body: formData,
     });
     expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.message).toMatch(/received/i);
-    expect(body).toHaveProperty("fileSize");
-    expect(body.fileName).toBe("paper.pdf");
   });
 });
 

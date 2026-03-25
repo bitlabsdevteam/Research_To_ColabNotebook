@@ -8,11 +8,14 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { GenerateService } from "./generate.service";
 
 const MAX_SIZE_BYTES = 20 * 1024 * 1024; // 20 MB
 
 @Controller("generate")
 export class GenerateController {
+  constructor(private readonly generateService: GenerateService) {}
+
   @Post()
   @HttpCode(200)
   @UseInterceptors(
@@ -44,11 +47,7 @@ export class GenerateController {
       throw new BadRequestException("apiKey is required.");
     }
 
-    // For now, just acknowledge receipt — pipeline wiring comes in Task 9
-    return {
-      message: "PDF received successfully.",
-      fileName: file.originalname,
-      fileSize: file.size,
-    };
+    const notebook = await this.generateService.generate(file.buffer, apiKey);
+    return notebook;
   }
 }

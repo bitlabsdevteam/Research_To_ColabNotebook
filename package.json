@@ -16,9 +16,12 @@
     "@nestjs/platform-express": "^11.1.17",
     "@nestjs/testing": "^11.1.17",
     "@playwright/test": "^1.58.2",
+    "@swc/core": "^1.15.21",
+    "pdf-lib": "^1.17.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "turbo": "^2.4.0",
+    "unplugin-swc": "^1.5.9",
     "vitest": "^3.2.4"
   }
 }

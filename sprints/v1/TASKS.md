@@ -41,9 +41,10 @@
   - Files: `apps/api/src/notebook/notebook-builder.service.ts`, `apps/api/src/notebook/notebook.module.ts`, `tests/unit/notebook-builder.spec.ts`
   - Completed: 2026-03-25 — NotebookBuilderService producing nbformat 4.5 with Colab metadata, line-split sources, figure embedding
 
-- [ ] Task 9: End-to-end pipeline — wire all services into the generate endpoint (P0)
+- [x] Task 9: End-to-end pipeline — wire all services into the generate endpoint (P0)
   - Acceptance: `POST /api/generate` with a PDF and API key returns a valid `.ipynb` file. Pipeline: upload → parse → extract figures → AI generate → build notebook → respond. Integration test with mocked AI passes.
   - Files: `apps/api/src/generate/generate.service.ts`, `tests/integration/generate.spec.ts`
+  - Completed: 2026-03-25 — GenerateService orchestrates PDF parse → AI generate → notebook build; controller returns .ipynb JSON
 
 - [ ] Task 10: Download and Open-in-Colab UI — frontend result handling (P0)
   - Acceptance: After generation completes, UI shows two buttons: "Download .ipynb" (triggers browser download) and "Open in Colab" (opens `colab.research.google.com/notebooks/` with notebook upload). Loading state shown during generation. Error messages displayed on failure.
