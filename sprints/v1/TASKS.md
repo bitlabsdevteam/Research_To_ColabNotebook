@@ -22,9 +22,10 @@
   - Files: `apps/api/src/generate/generate.controller.ts`, `apps/api/src/generate/generate.module.ts`, `apps/api/src/generate/dto/generate.dto.ts`
   - Completed: 2026-03-25 — GenerateController with Multer file upload, PDF/apiKey validation, 20MB limit
 
-- [ ] Task 5: PDF text extraction service — parse PDF into structured text (P0)
+- [x] Task 5: PDF text extraction service — parse PDF into structured text (P0)
   - Acceptance: Given a PDF buffer, extracts full text with page boundaries. Identifies sections (Abstract, Introduction, Methods, etc.) by heading patterns. Returns structured JSON with sections and raw text. Unit test with a sample PDF passes.
   - Files: `apps/api/src/pdf-parser/pdf-parser.service.ts`, `apps/api/src/pdf-parser/pdf-parser.module.ts`, `tests/unit/pdf-parser.spec.ts`
+  - Completed: 2026-03-25 — PdfParserService using pdfjs-dist, extracts text + identifies sections via regex heading patterns
 
 - [ ] Task 6: PDF figure extraction service — extract images/diagrams from PDF (P1)
   - Acceptance: Given a PDF buffer, extracts embedded images as base64 PNG strings. Associates figures with page numbers. Returns array of `{ page, base64, caption? }`. Unit test confirms extraction from a test PDF with images.
