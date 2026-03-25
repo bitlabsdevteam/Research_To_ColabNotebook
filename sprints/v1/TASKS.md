@@ -7,9 +7,10 @@
   - Files: `package.json`, `apps/web/` (Next.js), `apps/api/` (NestJS), `turbo.json` or root scripts
   - Completed: 2026-03-25 — Turborepo monorepo with Next.js 15 + NestJS 11, health endpoint verified, TS compiles clean
 
-- [ ] Task 2: API key input UI — frontend component for entering OpenAI key (P0)
+- [x] Task 2: API key input UI — frontend component for entering OpenAI key (P0)
   - Acceptance: Landing page renders with a text input for API key (masked). Key is stored in React context. A "key set" indicator shows when key is present. Key is never sent to backend except with generation requests.
   - Files: `apps/web/app/page.tsx`, `apps/web/app/context/ApiKeyContext.tsx`, `apps/web/app/components/ApiKeyInput.tsx`
+  - Completed: 2026-03-25 — ApiKeyContext + ApiKeyInput component with masked input and green "Key set" indicator
 
 - [ ] Task 3: PDF upload UI — drag-and-drop file upload with validation (P0)
   - Acceptance: Dropzone component accepts `.pdf` files only (max 20 MB). Shows file name and size after selection. Upload button is disabled until both API key and PDF are present. Visual feedback on drag-over.

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ApiKeyProvider } from "./context/ApiKeyContext";
 
 export const metadata: Metadata = {
   title: "Paper2Notebook",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
-        {children}
+        <ApiKeyProvider>{children}</ApiKeyProvider>
       </body>
     </html>
   );
