@@ -135,4 +135,73 @@ describe("AiService", () => {
     // Verify the service was called (API key is passed to constructor)
     expect(mockCreate).toHaveBeenCalledTimes(1);
   });
+
+  it("filters out cells with invalid cell_type", async () => {
+    const cellsWithInvalid = [
+      { cell_type: "markdown", source: "# Valid" },
+      { cell_type: "invalid_type", source: "bad cell" },
+      { cell_type: "code", source: "print('hello')" },
+      { cell_type: 123, source: "number type" },
+    ];
+    mockCreate.mockResolvedValueOnce({
+      choices: [{ message: { content: JSON.stringify(cellsWithInvalid) } }],
+    });
+
+    const result = await service.generateNotebook(sampleSections, [], "sk-test");
+
+    expect(result).toHaveLength(2);
+    expect(result[0].cell_type).toBe("markdown");
+    expect(result[1].cell_type).toBe("code");
+  });
+
+  it("filters out cells with empty or non-string source", async () => {
+    const cellsWithBadSource = [
+      { cell_type: "markdown", source: "# Valid" },
+      { cell_type: "code", source: "" },
+      { cell_type: "markdown", source: null },
+      { cell_type: "code", source: 42 },
+      { cell_type: "code", source: "print('valid')" },
+    ];
+    mockCreate.mockResolvedValueOnce({
+      choices: [{ message: { content: JSON.stringify(cellsWithBadSource) } }],
+    });
+
+    const result = await service.generateNotebook(sampleSections, [], "sk-test");
+
+    expect(result).toHaveLength(2);
+    expect(result[0].source).toBe("# Valid");
+    expect(result[1].source).toBe("print('valid')");
+  });
+
+  it("throws error when all cells are invalid (zero valid cells)", async () => {
+    const allInvalid = [
+      { cell_type: "invalid", source: "bad" },
+      { cell_type: "code", source: "" },
+      { cell_type: "markdown", source: null },
+    ];
+    mockCreate.mockResolvedValueOnce({
+      choices: [{ message: { content: JSON.stringify(allInvalid) } }],
+    });
+
+    await expect(
+      service.generateNotebook(sampleSections, [], "sk-test")
+    ).rejects.toThrow(/no valid.*cells/i);
+  });
+
+  it("filters out non-object entries in the cells array", async () => {
+    const mixedArray = [
+      "just a string",
+      42,
+      null,
+      { cell_type: "code", source: "valid_code()" },
+    ];
+    mockCreate.mockResolvedValueOnce({
+      choices: [{ message: { content: JSON.stringify(mixedArray) } }],
+    });
+
+    const result = await service.generateNotebook(sampleSections, [], "sk-test");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].source).toBe("valid_code()");
+  });
 });

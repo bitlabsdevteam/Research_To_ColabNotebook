@@ -7,9 +7,10 @@
   - Files: `apps/api/src/ai/prompt-sanitizer.ts`, `apps/api/src/ai/prompts/notebook-prompt.ts`, `tests/unit/prompt-sanitizer.spec.ts`
   - Completed: 2026-03-27 — PromptSanitizer with 13 regex patterns, security guardrail in system prompt, sanitizeText() applied in buildUserPrompt(), 14 unit tests passing
 
-- [ ] Task 2: AI response validation — validate cell structure returned by GPT (P0)
+- [x] Task 2: AI response validation — validate cell structure returned by GPT (P0)
   - Acceptance: After parsing GPT's JSON response, each cell is validated: `cell_type` must be `"markdown"` or `"code"`, `source` must be a non-empty string. Invalid cells are filtered out with a warning logged. If zero valid cells remain, an error is thrown. Unit test confirms invalid cells are rejected and valid cells pass through.
   - Files: `apps/api/src/ai/ai.service.ts`, `tests/unit/ai.service.spec.ts`
+  - Completed: 2026-03-27 — Cell validation with Logger warnings, filters invalid cell_type/source/non-objects, throws on zero valid cells, 4 new unit tests
 
 - [ ] Task 3: Security headers — add helmet middleware (P0)
   - Acceptance: `helmet` is installed and applied as global middleware in `main.ts`. All API responses include `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and other helmet defaults. Integration test verifies headers are present on the `/health` endpoint response.
