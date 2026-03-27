@@ -1,0 +1,81 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Build & Deploy to AWS ECS
+    runs-on: ubuntu-latest
+    # Only deploy after CI passes
+    needs: []
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push backend image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/paper2notebook-backend:$IMAGE_TAG -f apps/api/Dockerfile apps/api/
+          docker push $ECR_REGISTRY/paper2notebook-backend:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/paper2notebook-backend:$IMAGE_TAG $ECR_REGISTRY/paper2notebook-backend:latest
+          docker push $ECR_REGISTRY/paper2notebook-backend:latest
+
+      - name: Build and push frontend image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/paper2notebook-frontend:$IMAGE_TAG -f apps/web/Dockerfile apps/web/
+          docker push $ECR_REGISTRY/paper2notebook-frontend:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/paper2notebook-frontend:$IMAGE_TAG $ECR_REGISTRY/paper2notebook-frontend:latest
+          docker push $ECR_REGISTRY/paper2notebook-frontend:latest
+
+      - name: Update ECS backend service
+        run: |
+          aws ecs update-service \
+            --cluster paper2notebook-cluster \
+            --service paper2notebook-backend \
+            --force-new-deployment \
+            --region $AWS_REGION
+
+      - name: Update ECS frontend service
+        run: |
+          aws ecs update-service \
+            --cluster paper2notebook-cluster \
+            --service paper2notebook-frontend \
+            --force-new-deployment \
+            --region $AWS_REGION
+
+      - name: Wait for backend deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster paper2notebook-cluster \
+            --services paper2notebook-backend \
+            --region $AWS_REGION
+        timeout-minutes: 10
+
+      - name: Wait for frontend deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster paper2notebook-cluster \
+            --services paper2notebook-frontend \
+            --region $AWS_REGION
+        timeout-minutes: 10

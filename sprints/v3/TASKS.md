@@ -47,6 +47,7 @@
   - Files: `docker-compose.yml`, `.env.docker`
   - Completed: 2026-03-27 — docker-compose with backend (healthcheck, CORS) + frontend (depends_on healthy backend), .env.docker template, 12 validation tests
 
-- [ ] Task 10: Terraform AWS ECS Fargate + CD pipeline (P1)
+- [x] Task 10: Terraform AWS ECS Fargate + CD pipeline (P1)
   - Acceptance: `infra/main.tf` defines: VPC with public subnets, ECS cluster, ECR repositories (frontend + backend), ECS task definitions for both services, ECS services with Fargate launch type, Application Load Balancer routing `/` to frontend and `/api/*` to backend, security groups allowing HTTP/HTTPS inbound. S3 backend block for remote state. Variables for region, image tags. `infra/variables.tf` and `infra/outputs.tf` created. `.github/workflows/cd.yml` triggers on push to main (after CI passes): builds Docker images, pushes to ECR, updates ECS services with new task definitions. AWS credentials from GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`). `terraform plan` succeeds without errors (does NOT apply — that's manual for first deploy).
   - Files: `infra/main.tf`, `infra/variables.tf`, `infra/outputs.tf`, `.github/workflows/cd.yml`
+  - Completed: 2026-03-27 — Full Terraform config (VPC, ECS Fargate, ECR, ALB, security groups, CloudWatch logs, S3 state), CD workflow (build+push to ECR, deploy to ECS), 18 validation tests
