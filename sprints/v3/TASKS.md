@@ -26,9 +26,10 @@
   - Acceptance: A Playwright test configured with `headless: false` opens a visible browser. It navigates to the app, enters an API key from `OPENAI_API_KEY` env var, uploads the "Attention Is All You Need" PDF (path from `TEST_PDF_PATH` env var, default: `tests/fixtures/attention-is-all-you-need.pdf`), clicks Generate, and waits for the result. Validates: response is valid JSON, notebook has 4+ code cells, notebook has 4+ markdown cells, at least one code cell contains valid Python (imports or function definitions), and the system prompt security disclaimer is not leaked into cell content. Screenshots at each step. Test is skipped if `OPENAI_API_KEY` is not set (so CI doesn't fail).
   - Files: `tests/e2e/quality-test.spec.ts`, `tests/screenshots/task5-*.png`
 
-- [ ] Task 6: GitHub Actions CI workflow — tests + security scans (P0)
+- [x] Task 6: GitHub Actions CI workflow — tests + security scans (P0)
   - Acceptance: `.github/workflows/ci.yml` runs on every push and pull_request. Jobs: (1) `test` — installs dependencies, runs `npm run test` (vitest unit + integration), runs Playwright E2E tests with `npx playwright install chromium` first. (2) `security` — runs `npx semgrep --config auto apps/ --quiet` and `npm audit --production`. Both jobs must pass for the workflow to succeed. Uses Node.js 20. Caches `node_modules` and Playwright browsers. The quality test (Task 5) is NOT included in CI (it requires a real API key).
   - Files: `.github/workflows/ci.yml`
+  - Completed: 2026-03-27 — CI workflow with test job (vitest + playwright) and security job (semgrep + npm audit), Node 20, npm cache, 8 validation tests
 
 - [ ] Task 7: GitHub branch protection + repo setup via gh CLI (P1)
   - Acceptance: A shell script `scripts/setup-github.sh` uses `gh` CLI to: (1) ensure the repo has a remote origin, (2) set branch protection on `main` requiring the CI checks to pass before merge, (3) require at least 1 approval on PRs (if applicable), (4) print a summary of the configured protections. Script is idempotent (safe to run multiple times). README-style comments explain each `gh` command.
