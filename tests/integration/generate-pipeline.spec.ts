@@ -56,15 +56,20 @@ describe("POST /generate — full pipeline", () => {
     const { NotebookBuilderService } = await import(
       "../../apps/api/src/notebook/notebook-builder.service"
     );
+    const { FigureExtractorService } = await import(
+      "../../apps/api/src/pdf-parser/figure-extractor.service"
+    );
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [GenerateController],
-      providers: [GenerateService, PdfParserService, AiService, NotebookBuilderService],
+      providers: [GenerateService, PdfParserService, AiService, NotebookBuilderService, FigureExtractorService],
     })
       .overrideProvider(PdfParserService)
       .useValue({ parse: mockParse })
       .overrideProvider(AiService)
       .useValue({ generateNotebook: mockGenerateNotebook })
+      .overrideProvider(FigureExtractorService)
+      .useValue({ extract: vi.fn().mockResolvedValue([]) })
       .compile();
 
     app = moduleFixture.createNestApplication();
