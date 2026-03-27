@@ -28,10 +28,12 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append("pdf", pdfFile);
-      formData.append("apiKey", apiKey);
 
       const res = await fetch(`${API_URL}/generate`, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
         body: formData,
       });
 

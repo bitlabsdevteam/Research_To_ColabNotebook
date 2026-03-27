@@ -34,10 +34,10 @@ describe("POST /generate — validation", () => {
 
   it("returns 400 when no file is uploaded", async () => {
     const formData = new FormData();
-    formData.append("apiKey", "sk-test");
 
     const res = await fetch(`${baseUrl}/generate`, {
       method: "POST",
+      headers: { Authorization: "Bearer sk-test" },
       body: formData,
     });
     expect(res.status).toBe(400);
@@ -45,7 +45,7 @@ describe("POST /generate — validation", () => {
     expect(body.message).toMatch(/pdf/i);
   });
 
-  it("returns 400 when apiKey is missing", async () => {
+  it("returns 400 when Authorization header is missing", async () => {
     const pdfBuffer = createMinimalPdf();
     const formData = new FormData();
     formData.append(
@@ -70,10 +70,10 @@ describe("POST /generate — validation", () => {
       new Blob(["not a pdf"], { type: "text/plain" }),
       "test.txt"
     );
-    formData.append("apiKey", "sk-test");
 
     const res = await fetch(`${baseUrl}/generate`, {
       method: "POST",
+      headers: { Authorization: "Bearer sk-test" },
       body: formData,
     });
     expect(res.status).toBe(400);
@@ -81,7 +81,7 @@ describe("POST /generate — validation", () => {
     expect(body.message).toMatch(/pdf/i);
   });
 
-  it("accepts a valid PDF with apiKey and returns 200", async () => {
+  it("accepts a valid PDF with Authorization header and returns 200", async () => {
     const pdfBuffer = createMinimalPdf();
     const formData = new FormData();
     formData.append(
@@ -89,10 +89,10 @@ describe("POST /generate — validation", () => {
       new Blob([pdfBuffer], { type: "application/pdf" }),
       "paper.pdf"
     );
-    formData.append("apiKey", "sk-test-key-12345");
 
     const res = await fetch(`${baseUrl}/generate`, {
       method: "POST",
+      headers: { Authorization: "Bearer sk-test-key-12345" },
       body: formData,
     });
     expect(res.status).toBe(200);

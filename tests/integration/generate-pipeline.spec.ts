@@ -86,10 +86,10 @@ describe("POST /generate — full pipeline", () => {
       new Blob([pdfBuffer], { type: "application/pdf" }),
       "paper.pdf"
     );
-    formData.append("apiKey", "sk-test-key");
 
     const res = await fetch(`${baseUrl}/generate`, {
       method: "POST",
+      headers: { Authorization: "Bearer sk-test-key" },
       body: formData,
     });
 
@@ -129,10 +129,10 @@ describe("POST /generate — full pipeline", () => {
       new Blob([pdfBuffer], { type: "application/pdf" }),
       "paper.pdf"
     );
-    formData.append("apiKey", "sk-test-key");
 
     await fetch(`${baseUrl}/generate`, {
       method: "POST",
+      headers: { Authorization: "Bearer sk-test-key" },
       body: formData,
     });
 
@@ -152,10 +152,10 @@ describe("POST /generate — full pipeline", () => {
 
   it("still validates inputs (no file = 400)", async () => {
     const formData = new FormData();
-    formData.append("apiKey", "sk-test");
 
     const res = await fetch(`${baseUrl}/generate`, {
       method: "POST",
+      headers: { Authorization: "Bearer sk-test" },
       body: formData,
     });
 

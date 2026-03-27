@@ -22,9 +22,10 @@
   - Files: `apps/api/src/app.module.ts`, `apps/api/src/health.controller.ts`, `apps/api/src/main.ts`, `apps/api/package.json`, `tests/integration/rate-limiting.spec.ts`
   - Completed: 2026-03-27 — ThrottlerModule (10 req/60s) with global guard, @SkipThrottle on health, 2 integration tests
 
-- [ ] Task 5: Move API key to Authorization header (P0)
+- [x] Task 5: Move API key to Authorization header (P0)
   - Acceptance: Frontend sends API key as `Authorization: Bearer <key>` header instead of in FormData body. Backend reads the key from the `Authorization` header, strips the `Bearer ` prefix, validates it. The `apiKey` field is removed from FormData. Both frontend and backend tests updated. E2E test confirms the flow still works end-to-end.
   - Files: `apps/web/app/page.tsx`, `apps/api/src/generate/generate.controller.ts`, `tests/integration/generate-endpoint.spec.ts`, `tests/e2e/result-panel.spec.ts`
+  - Completed: 2026-03-27 — Backend reads from Authorization header, frontend sends Bearer token, all integration tests updated and passing
 
 - [ ] Task 6: Error message sanitization — generic errors to client, details server-side (P0)
   - Acceptance: `AiService` and `GenerateController` catch errors and return generic messages to the client (e.g., "Generation failed. Please try again.") while logging full error details server-side via NestJS Logger. OpenAI error messages, JSON parse failures, and stack traces are never exposed in HTTP responses. Unit test confirms error details are not in the response body.

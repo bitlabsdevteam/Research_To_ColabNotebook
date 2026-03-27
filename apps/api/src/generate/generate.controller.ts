@@ -4,7 +4,7 @@ import {
   HttpCode,
   UseInterceptors,
   UploadedFile,
-  Body,
+  Headers,
   BadRequestException,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -37,14 +37,23 @@ export class GenerateController {
   )
   async generate(
     @UploadedFile() file: Express.Multer.File | undefined,
-    @Body("apiKey") apiKey: string | undefined
+    @Headers("authorization") authHeader: string | undefined
   ) {
     if (!file) {
       throw new BadRequestException("A PDF file is required.");
     }
 
-    if (!apiKey || apiKey.trim().length === 0) {
-      throw new BadRequestException("apiKey is required.");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new BadRequestException(
+        "apiKey is required in Authorization header (Bearer <key>)."
+      );
+    }
+
+    const apiKey = authHeader.slice(7).trim();
+    if (apiKey.length === 0) {
+      throw new BadRequestException(
+        "apiKey is required in Authorization header (Bearer <key>)."
+      );
     }
 
     const notebook = await this.generateService.generate(file.buffer, apiKey);
