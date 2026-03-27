@@ -22,9 +22,10 @@
   - Files: `tests/e2e/full-flow.spec.ts`, `tests/screenshots/task4-*.png`
   - Completed: 2026-03-27 — 2 E2E tests (full happy path + error flow), 6 screenshots, mocked backend via page.route()
 
-- [ ] Task 5: Real quality test — visible browser with real PDF (P1)
+- [x] Task 5: Real quality test — visible browser with real PDF (P1)
   - Acceptance: A Playwright test configured with `headless: false` opens a visible browser. It navigates to the app, enters an API key from `OPENAI_API_KEY` env var, uploads the "Attention Is All You Need" PDF (path from `TEST_PDF_PATH` env var, default: `tests/fixtures/attention-is-all-you-need.pdf`), clicks Generate, and waits for the result. Validates: response is valid JSON, notebook has 4+ code cells, notebook has 4+ markdown cells, at least one code cell contains valid Python (imports or function definitions), and the system prompt security disclaimer is not leaked into cell content. Screenshots at each step. Test is skipped if `OPENAI_API_KEY` is not set (so CI doesn't fail).
   - Files: `tests/e2e/quality-test.spec.ts`, `tests/screenshots/task5-*.png`
+  - Completed: 2026-03-27 — Headful Playwright test with 6 screenshots, validates nbformat/cells/Python/security, skips in CI without API key, 2min timeout
 
 - [x] Task 6: GitHub Actions CI workflow — tests + security scans (P0)
   - Acceptance: `.github/workflows/ci.yml` runs on every push and pull_request. Jobs: (1) `test` — installs dependencies, runs `npm run test` (vitest unit + integration), runs Playwright E2E tests with `npx playwright install chromium` first. (2) `security` — runs `npx semgrep --config auto apps/ --quiet` and `npm audit --production`. Both jobs must pass for the workflow to succeed. Uses Node.js 20. Caches `node_modules` and Playwright browsers. The quality test (Task 5) is NOT included in CI (it requires a real API key).
