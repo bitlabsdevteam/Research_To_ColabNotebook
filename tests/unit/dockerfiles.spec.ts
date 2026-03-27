@@ -38,7 +38,7 @@ describe("Backend Dockerfile (apps/api/Dockerfile)", () => {
     content = fs.readFileSync(apiDockerfile, "utf-8");
     expect(content).toMatch(/COPY.*dist/);
     // Production deps via npm ci --omit=dev or COPY node_modules
-    expect(content).toMatch(/npm ci --omit=dev|COPY.*node_modules/);
+    expect(content).toMatch(/npm ci.*--omit=dev|COPY.*node_modules/);
   });
 });
 

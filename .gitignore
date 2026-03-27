@@ -18,6 +18,12 @@ dist/
 *.cert
 *.p12
 *.pfx
+aws_cred.md
+
+# Terraform
+infra/.terraform/
+*.tfstate
+*.tfstate.*
 
 # Coverage and test outputs
 coverage/

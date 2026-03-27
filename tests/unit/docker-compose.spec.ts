@@ -27,7 +27,7 @@ describe("docker-compose.yml", () => {
     const raw = fs.readFileSync(composePath, "utf-8");
     config = yaml.parse(raw);
     const backend = config.services.backend;
-    expect(backend.build.context || backend.build).toMatch(/apps\/api/);
+    expect(backend.build.dockerfile).toMatch(/apps\/api/);
   });
 
   it("backend exposes port 3001", () => {
@@ -58,7 +58,7 @@ describe("docker-compose.yml", () => {
     const raw = fs.readFileSync(composePath, "utf-8");
     config = yaml.parse(raw);
     const frontend = config.services.frontend;
-    expect(frontend.build.context || frontend.build).toMatch(/apps\/web/);
+    expect(frontend.build.dockerfile).toMatch(/apps\/web/);
   });
 
   it("frontend exposes port 3000", () => {
