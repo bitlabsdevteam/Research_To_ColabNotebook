@@ -12,13 +12,16 @@ dist/
 .env.*
 !.env.local.example
 
-# Secrets and certificates
+# Secrets and credentials
 *.pem
 *.key
 *.cert
 *.p12
 *.pfx
 aws_cred.md
+*aws_cred*
+*credentials*
+*secrets*
 
 # Terraform
 infra/.terraform/
