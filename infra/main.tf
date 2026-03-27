@@ -4,7 +4,7 @@ terraform {
   backend "s3" {
     bucket = "paper-to-notebook-tf-state"
     key    = "prod/terraform.tfstate"
-    region = "us-east-1"
+    region = "ap-northeast-1"
   }
 
   required_providers {

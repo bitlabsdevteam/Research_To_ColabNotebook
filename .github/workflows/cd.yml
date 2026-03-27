@@ -33,7 +33,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/paper2notebook-backend:$IMAGE_TAG -f apps/api/Dockerfile apps/api/
+          docker build -t $ECR_REGISTRY/paper2notebook-backend:$IMAGE_TAG -f apps/api/Dockerfile .
           docker push $ECR_REGISTRY/paper2notebook-backend:$IMAGE_TAG
           docker tag $ECR_REGISTRY/paper2notebook-backend:$IMAGE_TAG $ECR_REGISTRY/paper2notebook-backend:latest
           docker push $ECR_REGISTRY/paper2notebook-backend:latest
@@ -43,7 +43,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/paper2notebook-frontend:$IMAGE_TAG -f apps/web/Dockerfile apps/web/
+          docker build -t $ECR_REGISTRY/paper2notebook-frontend:$IMAGE_TAG -f apps/web/Dockerfile .
           docker push $ECR_REGISTRY/paper2notebook-frontend:$IMAGE_TAG
           docker tag $ECR_REGISTRY/paper2notebook-frontend:$IMAGE_TAG $ECR_REGISTRY/paper2notebook-frontend:latest
           docker push $ECR_REGISTRY/paper2notebook-frontend:latest

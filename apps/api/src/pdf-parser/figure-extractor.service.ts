@@ -25,7 +25,7 @@ export class FigureExtractorService {
       for (let j = 0; j < operatorList.fnArray.length; j++) {
         if (
           operatorList.fnArray[j] === OPS.paintImageXObject ||
-          operatorList.fnArray[j] === OPS.paintJpegXObject
+          operatorList.fnArray[j] === (OPS as any).paintJpegXObject
         ) {
           const imgName = operatorList.argsArray[j][0];
           try {

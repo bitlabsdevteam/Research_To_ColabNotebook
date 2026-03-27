@@ -2,13 +2,19 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci
+# Copy root package files for monorepo install
+COPY package.json package-lock.json ./
+COPY apps/api/package.json ./apps/api/
 
-COPY tsconfig.json nest-cli.json ./
-COPY src/ ./src/
+# Install all deps (monorepo root)
+RUN npm ci --workspace=@paper2notebook/api
 
-RUN npm run build
+# Copy API source
+COPY apps/api/ ./apps/api/
+
+# Build NestJS
+WORKDIR /app/apps/api
+RUN npx nest build
 
 # Stage 2: Production
 FROM node:20-alpine AS runner
@@ -16,10 +22,13 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev && npm cache clean --force
+# Copy root package files and install production deps only
+COPY package.json package-lock.json ./
+COPY apps/api/package.json ./apps/api/
+RUN npm ci --workspace=@paper2notebook/api --omit=dev && npm cache clean --force
 
-COPY --from=builder /app/dist ./dist
+# Copy built output
+COPY --from=builder /app/apps/api/dist ./dist
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nestjs
