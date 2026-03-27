@@ -35,9 +35,10 @@
   - Acceptance: A shell script `scripts/setup-github.sh` uses `gh` CLI to: (1) ensure the repo has a remote origin, (2) set branch protection on `main` requiring the CI checks to pass before merge, (3) require at least 1 approval on PRs (if applicable), (4) print a summary of the configured protections. Script is idempotent (safe to run multiple times). README-style comments explain each `gh` command.
   - Files: `scripts/setup-github.sh`
 
-- [ ] Task 8: Dockerfiles for backend and frontend (P0)
+- [x] Task 8: Dockerfiles for backend and frontend (P0)
   - Acceptance: `apps/api/Dockerfile` is a multi-stage build: stage 1 installs deps and builds with `npm run build`, stage 2 copies only `dist/` and production `node_modules` into a slim Node 20 Alpine image, exposes port 3001, runs `node dist/main`. `apps/web/Dockerfile` is a multi-stage build: stage 1 installs deps and builds with `npm run build`, stage 2 serves the Next.js standalone output with Node 20 Alpine, exposes port 3000. Both images are under 200MB. `docker build` succeeds for both without errors.
   - Files: `apps/api/Dockerfile`, `apps/web/Dockerfile`
+  - Completed: 2026-03-27 — Multi-stage Dockerfiles with Node 20 Alpine, non-root users, .dockerignore, standalone Next.js output, semgrep finding fixed, 11 validation tests
 
 - [ ] Task 9: docker-compose.yml for local orchestration (P0)
   - Acceptance: Root `docker-compose.yml` defines two services: `backend` (builds from `apps/api/Dockerfile`, port 3001, env vars for CORS_ORIGIN) and `frontend` (builds from `apps/web/Dockerfile`, port 3000, env var for NEXT_PUBLIC_API_URL pointing to backend). `docker compose up --build` starts both services and they can communicate. A `.env.docker` example file documents the required env vars. Health check configured for backend service.
