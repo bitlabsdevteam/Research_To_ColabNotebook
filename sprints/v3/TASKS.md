@@ -32,9 +32,10 @@
   - Files: `.github/workflows/ci.yml`
   - Completed: 2026-03-27 — CI workflow with test job (vitest + playwright) and security job (semgrep + npm audit), Node 20, npm cache, 8 validation tests
 
-- [ ] Task 7: GitHub branch protection + repo setup via gh CLI (P1)
+- [x] Task 7: GitHub branch protection + repo setup via gh CLI (P1)
   - Acceptance: A shell script `scripts/setup-github.sh` uses `gh` CLI to: (1) ensure the repo has a remote origin, (2) set branch protection on `main` requiring the CI checks to pass before merge, (3) require at least 1 approval on PRs (if applicable), (4) print a summary of the configured protections. Script is idempotent (safe to run multiple times). README-style comments explain each `gh` command.
   - Files: `scripts/setup-github.sh`
+  - Completed: 2026-03-27 — Idempotent bash script using gh api for branch protection (status checks, PR reviews, admin enforcement), 7 validation tests
 
 - [x] Task 8: Dockerfiles for backend and frontend (P0)
   - Acceptance: `apps/api/Dockerfile` is a multi-stage build: stage 1 installs deps and builds with `npm run build`, stage 2 copies only `dist/` and production `node_modules` into a slim Node 20 Alpine image, exposes port 3001, runs `node dist/main`. `apps/web/Dockerfile` is a multi-stage build: stage 1 installs deps and builds with `npm run build`, stage 2 serves the Next.js standalone output with Node 20 Alpine, exposes port 3000. Both images are under 200MB. `docker build` succeeds for both without errors.
