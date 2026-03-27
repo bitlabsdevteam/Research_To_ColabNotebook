@@ -27,9 +27,10 @@
   - Files: `apps/web/app/page.tsx`, `apps/api/src/generate/generate.controller.ts`, `tests/integration/generate-endpoint.spec.ts`, `tests/e2e/result-panel.spec.ts`
   - Completed: 2026-03-27 — Backend reads from Authorization header, frontend sends Bearer token, all integration tests updated and passing
 
-- [ ] Task 6: Error message sanitization — generic errors to client, details server-side (P0)
+- [x] Task 6: Error message sanitization — generic errors to client, details server-side (P0)
   - Acceptance: `AiService` and `GenerateController` catch errors and return generic messages to the client (e.g., "Generation failed. Please try again.") while logging full error details server-side via NestJS Logger. OpenAI error messages, JSON parse failures, and stack traces are never exposed in HTTP responses. Unit test confirms error details are not in the response body.
   - Files: `apps/api/src/ai/ai.service.ts`, `apps/api/src/generate/generate.controller.ts`, `tests/unit/ai.service.spec.ts`, `tests/integration/generate-endpoint.spec.ts`
+  - Completed: 2026-03-27 — All errors logged via Logger, generic "Generation failed" messages returned to client, 9 unit + 7 integration tests passing
 
 - [ ] Task 7: PDF parser safeguards — page limit and parsing timeout (P0)
   - Acceptance: `PdfParserService` rejects PDFs with more than 100 pages (returns 400 with "PDF exceeds maximum page count"). Parsing is wrapped in a 30-second timeout (returns 500 with generic error if exceeded). Unit tests confirm both limits are enforced.

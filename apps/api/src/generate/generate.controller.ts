@@ -6,6 +6,8 @@ import {
   UploadedFile,
   Headers,
   BadRequestException,
+  InternalServerErrorException,
+  Logger,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { GenerateService } from "./generate.service";
@@ -14,6 +16,8 @@ const MAX_SIZE_BYTES = 20 * 1024 * 1024; // 20 MB
 
 @Controller("generate")
 export class GenerateController {
+  private readonly logger = new Logger(GenerateController.name);
+
   constructor(private readonly generateService: GenerateService) {}
 
   @Post()
@@ -56,7 +60,14 @@ export class GenerateController {
       );
     }
 
-    const notebook = await this.generateService.generate(file.buffer, apiKey);
-    return notebook;
+    try {
+      const notebook = await this.generateService.generate(file.buffer, apiKey);
+      return notebook;
+    } catch (error: any) {
+      this.logger.error(`Generation failed: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(
+        "Generation failed. Please try again."
+      );
+    }
   }
 }

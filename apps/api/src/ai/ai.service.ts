@@ -32,27 +32,29 @@ export class AiService {
         temperature: 0.3,
       });
     } catch (error: any) {
-      throw new Error(
-        `OpenAI API error: ${error.message || "Unknown error"}`
-      );
+      this.logger.error(`OpenAI API error: ${error.message || "Unknown error"}`);
+      throw new Error("Notebook generation failed. Please try again.");
     }
 
     const content = response.choices[0]?.message?.content;
     if (!content) {
-      throw new Error("OpenAI returned an empty response.");
+      this.logger.error("OpenAI returned an empty response.");
+      throw new Error("Notebook generation failed. Please try again.");
     }
 
     let cells: NotebookCell[];
     try {
       cells = JSON.parse(content);
     } catch {
-      throw new Error(
+      this.logger.error(
         `Failed to parse OpenAI response as JSON: ${content.slice(0, 200)}`
       );
+      throw new Error("Notebook generation failed. Please try again.");
     }
 
     if (!Array.isArray(cells)) {
-      throw new Error("OpenAI response is not an array of cells.");
+      this.logger.error("OpenAI response is not an array of cells.");
+      throw new Error("Notebook generation failed. Please try again.");
     }
 
     const validCells = cells.filter((cell) => {
@@ -72,7 +74,8 @@ export class AiService {
     });
 
     if (validCells.length === 0) {
-      throw new Error("No valid notebook cells returned by OpenAI.");
+      this.logger.error("No valid notebook cells returned by OpenAI.");
+      throw new Error("Notebook generation failed. Please try again.");
     }
 
     return validCells;
