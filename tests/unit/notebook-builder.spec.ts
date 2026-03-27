@@ -106,4 +106,55 @@ describe("NotebookBuilderService", () => {
     expect(parsed.nbformat).toBe(4);
     expect(parsed.cells).toHaveLength(4);
   });
+
+  it("produces no figure cells when figures array is empty", () => {
+    const notebook = service.build(sampleCells, []);
+    expect(notebook.cells).toHaveLength(4);
+    const figureCells = notebook.cells.filter(
+      (c: any) =>
+        c.cell_type === "markdown" &&
+        c.source.join("").includes("data:image/png;base64")
+    );
+    expect(figureCells).toHaveLength(0);
+  });
+
+  it("uses figure caption when provided", () => {
+    const figures = [
+      { page: 3, base64: "abc123", caption: "Architecture diagram" },
+    ];
+    const notebook = service.build([], figures);
+
+    expect(notebook.cells).toHaveLength(1);
+    const src = notebook.cells[0].source.join("");
+    expect(src).toContain("Architecture diagram");
+    expect(src).toContain("data:image/png;base64,abc123");
+  });
+
+  it("uses default caption when figure has no caption", () => {
+    const figures = [{ page: 7, base64: "xyz789" }];
+    const notebook = service.build([], figures);
+
+    const src = notebook.cells[0].source.join("");
+    expect(src).toContain("Figure from page 7");
+  });
+
+  it("preserves special characters in cell source", () => {
+    const specialCells = [
+      {
+        cell_type: "code" as const,
+        source: 'α = 0.05\nβ = "hello → world"\nprint(f"E=mc² {α}")',
+      },
+    ];
+    const notebook = service.build(specialCells);
+    const src = notebook.cells[0].source.join("");
+    expect(src).toContain("α = 0.05");
+    expect(src).toContain("→");
+    expect(src).toContain("E=mc²");
+  });
+
+  it("has nbformat exactly 4 and nbformat_minor exactly 5", () => {
+    const notebook = service.build(sampleCells);
+    expect(notebook.nbformat).toBe(4);
+    expect(notebook.nbformat_minor).toBe(5);
+  });
 });

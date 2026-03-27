@@ -7,9 +7,10 @@
   - Files: `tests/unit/generate.service.spec.ts`, `tests/unit/generate.controller.spec.ts`, `tests/unit/notebook-prompt.spec.ts`
   - Completed: 2026-03-27 — 25 new unit tests (8 GenerateService, 8 GenerateController, 9 notebook-prompt), all 81 tests passing
 
-- [ ] Task 2: Unit tests — NotebookBuilderService expanded coverage (P0)
+- [x] Task 2: Unit tests — NotebookBuilderService expanded coverage (P0)
   - Acceptance: `NotebookBuilderService` has 10+ total unit tests (5 existing + 5 new). New tests cover: figures are embedded as image cells, empty figures array produces no image cells, cells with special characters in source are preserved, notebook metadata includes `colab` and `kernelspec` fields, and `nbformat` is exactly 4. Existing tests remain passing.
   - Files: `tests/unit/notebook-builder.spec.ts`
+  - Completed: 2026-03-27 — 5 new tests (empty figures, caption/default caption, special chars, nbformat exact), 13 total passing
 
 - [ ] Task 3: Integration tests — expanded /generate endpoint with mocked AI (P0)
   - Acceptance: 4+ new integration tests added. Tests cover: successful generation returns valid .ipynb structure with correct nbformat, request with invalid PDF content returns appropriate error, request exceeding rate limit returns 429, and concurrent requests are handled correctly. All tests use mocked `AiService` and `PdfParserService`. Existing integration tests remain passing.
