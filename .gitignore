@@ -1,7 +1,36 @@
+# Dependencies
 node_modules/
+
+# Build outputs
 dist/
 .next/
 .turbo/
 *.tsbuildinfo
+
+# Environment variables
 .env
-.env.local
+.env.*
+!.env.local.example
+
+# Secrets and certificates
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+
+# Coverage and test outputs
+coverage/
+.nyc_output/
+test-results/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace

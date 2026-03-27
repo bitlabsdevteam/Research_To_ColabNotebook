@@ -37,9 +37,10 @@
   - Files: `apps/api/src/pdf-parser/pdf-parser.service.ts`, `tests/unit/pdf-parser.spec.ts`
   - Completed: 2026-03-27 — 100-page limit with BadRequestException, 30s Promise.race timeout, 3 new tests (reject 101, accept 100, timeout check)
 
-- [ ] Task 8: Add .gitignore with security entries (P1)
+- [x] Task 8: Add .gitignore with security entries (P1)
   - Acceptance: Root `.gitignore` includes entries for `.env*`, `node_modules/`, `dist/`, `.next/`, `*.pem`, `*.key`, coverage directories, and OS files. Verified by running `git status` and confirming no ignored files are tracked.
   - Files: `.gitignore`
+  - Completed: 2026-03-27 — Comprehensive .gitignore with env, secrets, certs, coverage, OS files, IDE entries; removed test-results/ from tracking
 
 - [ ] Task 9: PDF figure extraction service — extract images from PDF (P1)
   - Acceptance: Given a PDF buffer, `FigureExtractorService` extracts embedded images as base64 PNG strings using `pdfjs-dist` operator list. Associates figures with page numbers. Returns array of `{ page, base64, caption? }`. `GenerateService` passes extracted figures to the AI service and notebook builder. Unit test confirms extraction from a test PDF with images.
