@@ -17,9 +17,10 @@
   - Files: `tests/integration/generate-endpoint.spec.ts`
   - Completed: 2026-03-27 — 4 new tests (valid .ipynb structure, AI error → generic 500, empty Bearer → 400, wrong auth scheme → 400), 8 total endpoint tests
 
-- [ ] Task 4: E2E Playwright — full user flow with screenshots (P0)
+- [x] Task 4: E2E Playwright — full user flow with screenshots (P0)
   - Acceptance: A new Playwright E2E test covers the complete user flow: (1) navigate to home page — screenshot, (2) enter API key — screenshot, (3) upload a test PDF — screenshot, (4) click Generate — screenshot showing loading spinner, (5) wait for result — screenshot showing download button. Each screenshot saved to `tests/screenshots/task4-NN-description.png`. Tests use `data-testid` selectors. Tests run against a locally started dev server with mocked backend responses.
   - Files: `tests/e2e/full-flow.spec.ts`, `tests/screenshots/task4-*.png`
+  - Completed: 2026-03-27 — 2 E2E tests (full happy path + error flow), 6 screenshots, mocked backend via page.route()
 
 - [ ] Task 5: Real quality test — visible browser with real PDF (P1)
   - Acceptance: A Playwright test configured with `headless: false` opens a visible browser. It navigates to the app, enters an API key from `OPENAI_API_KEY` env var, uploads the "Attention Is All You Need" PDF (path from `TEST_PDF_PATH` env var, default: `tests/fixtures/attention-is-all-you-need.pdf`), clicks Generate, and waits for the result. Validates: response is valid JSON, notebook has 4+ code cells, notebook has 4+ markdown cells, at least one code cell contains valid Python (imports or function definitions), and the system prompt security disclaimer is not leaked into cell content. Screenshots at each step. Test is skipped if `OPENAI_API_KEY` is not set (so CI doesn't fail).
