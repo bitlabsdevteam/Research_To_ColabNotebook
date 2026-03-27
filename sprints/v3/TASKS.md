@@ -40,9 +40,10 @@
   - Files: `apps/api/Dockerfile`, `apps/web/Dockerfile`
   - Completed: 2026-03-27 — Multi-stage Dockerfiles with Node 20 Alpine, non-root users, .dockerignore, standalone Next.js output, semgrep finding fixed, 11 validation tests
 
-- [ ] Task 9: docker-compose.yml for local orchestration (P0)
+- [x] Task 9: docker-compose.yml for local orchestration (P0)
   - Acceptance: Root `docker-compose.yml` defines two services: `backend` (builds from `apps/api/Dockerfile`, port 3001, env vars for CORS_ORIGIN) and `frontend` (builds from `apps/web/Dockerfile`, port 3000, env var for NEXT_PUBLIC_API_URL pointing to backend). `docker compose up --build` starts both services and they can communicate. A `.env.docker` example file documents the required env vars. Health check configured for backend service.
   - Files: `docker-compose.yml`, `.env.docker`
+  - Completed: 2026-03-27 — docker-compose with backend (healthcheck, CORS) + frontend (depends_on healthy backend), .env.docker template, 12 validation tests
 
 - [ ] Task 10: Terraform AWS ECS Fargate + CD pipeline (P1)
   - Acceptance: `infra/main.tf` defines: VPC with public subnets, ECS cluster, ECR repositories (frontend + backend), ECS task definitions for both services, ECS services with Fargate launch type, Application Load Balancer routing `/` to frontend and `/api/*` to backend, security groups allowing HTTP/HTTPS inbound. S3 backend block for remote state. Variables for region, image tags. `infra/variables.tf` and `infra/outputs.tf` created. `.github/workflows/cd.yml` triggers on push to main (after CI passes): builds Docker images, pushes to ECR, updates ECS services with new task definitions. AWS credentials from GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`). `terraform plan` succeeds without errors (does NOT apply — that's manual for first deploy).
