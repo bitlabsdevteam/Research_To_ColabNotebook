@@ -17,9 +17,10 @@
   - Files: `apps/api/src/main.ts`, `apps/api/package.json`, `tests/integration/security-headers.spec.ts`
   - Completed: 2026-03-27 — helmet installed and applied in main.ts, 3 integration tests verify nosniff, X-Frame-Options, X-Powered-By removal
 
-- [ ] Task 4: Rate limiting — add @nestjs/throttler to the API (P0)
+- [x] Task 4: Rate limiting — add @nestjs/throttler to the API (P0)
   - Acceptance: `@nestjs/throttler` is installed and configured globally (10 requests per 60 seconds per IP). The `/generate` endpoint returns 429 Too Many Requests when the limit is exceeded. The `/health` endpoint is excluded from throttling via `@SkipThrottle()`. Integration test confirms 429 after exceeding the limit.
   - Files: `apps/api/src/app.module.ts`, `apps/api/src/health.controller.ts`, `apps/api/src/main.ts`, `apps/api/package.json`, `tests/integration/rate-limiting.spec.ts`
+  - Completed: 2026-03-27 — ThrottlerModule (10 req/60s) with global guard, @SkipThrottle on health, 2 integration tests
 
 - [ ] Task 5: Move API key to Authorization header (P0)
   - Acceptance: Frontend sends API key as `Authorization: Bearer <key>` header instead of in FormData body. Backend reads the key from the `Authorization` header, strips the `Bearer ` prefix, validates it. The `apiKey` field is removed from FormData. Both frontend and backend tests updated. E2E test confirms the flow still works end-to-end.
