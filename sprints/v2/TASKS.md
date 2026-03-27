@@ -32,9 +32,10 @@
   - Files: `apps/api/src/ai/ai.service.ts`, `apps/api/src/generate/generate.controller.ts`, `tests/unit/ai.service.spec.ts`, `tests/integration/generate-endpoint.spec.ts`
   - Completed: 2026-03-27 — All errors logged via Logger, generic "Generation failed" messages returned to client, 9 unit + 7 integration tests passing
 
-- [ ] Task 7: PDF parser safeguards — page limit and parsing timeout (P0)
+- [x] Task 7: PDF parser safeguards — page limit and parsing timeout (P0)
   - Acceptance: `PdfParserService` rejects PDFs with more than 100 pages (returns 400 with "PDF exceeds maximum page count"). Parsing is wrapped in a 30-second timeout (returns 500 with generic error if exceeded). Unit tests confirm both limits are enforced.
   - Files: `apps/api/src/pdf-parser/pdf-parser.service.ts`, `tests/unit/pdf-parser.spec.ts`
+  - Completed: 2026-03-27 — 100-page limit with BadRequestException, 30s Promise.race timeout, 3 new tests (reject 101, accept 100, timeout check)
 
 - [ ] Task 8: Add .gitignore with security entries (P1)
   - Acceptance: Root `.gitignore` includes entries for `.env*`, `node_modules/`, `dist/`, `.next/`, `*.pem`, `*.key`, coverage directories, and OS files. Verified by running `git status` and confirming no ignored files are tracked.

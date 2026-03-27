@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException, Logger } from "@nestjs/common";
 
 export interface PaperSection {
   title: string;
@@ -21,14 +21,41 @@ const SECTION_PATTERNS = [
   /^(Introduction|Background|Related Work|Methodology|Methods|Approach|Algorithm|Experiments?|Results?|Discussion|Conclusion|Conclusions|Acknowledgements?|References)\s*$/im,
 ];
 
+const MAX_PAGES = 100;
+const PARSE_TIMEOUT_MS = 30000;
+
 @Injectable()
 export class PdfParserService {
+  private readonly logger = new Logger(PdfParserService.name);
+
   async parse(buffer: Buffer): Promise<ParsedPaper> {
+    const parseWork = this.doParse(buffer);
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("PDF parsing timed out.")), PARSE_TIMEOUT_MS)
+    );
+
+    try {
+      return await Promise.race([parseWork, timeout]);
+    } catch (error: any) {
+      if (error instanceof BadRequestException) throw error;
+      this.logger.error(`PDF parse error: ${error.message}`);
+      throw error;
+    }
+  }
+
+  private async doParse(buffer: Buffer): Promise<ParsedPaper> {
     const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
     const uint8 = new Uint8Array(buffer);
     const doc = await getDocument({ data: uint8 }).promise;
 
     const pageCount = doc.numPages;
+
+    if (pageCount > MAX_PAGES) {
+      throw new BadRequestException(
+        `PDF exceeds maximum page count (${MAX_PAGES} pages).`
+      );
+    }
+
     const pageTexts: string[] = [];
 
     for (let i = 1; i <= pageCount; i++) {
