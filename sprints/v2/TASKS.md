@@ -12,9 +12,10 @@
   - Files: `apps/api/src/ai/ai.service.ts`, `tests/unit/ai.service.spec.ts`
   - Completed: 2026-03-27 — Cell validation with Logger warnings, filters invalid cell_type/source/non-objects, throws on zero valid cells, 4 new unit tests
 
-- [ ] Task 3: Security headers — add helmet middleware (P0)
+- [x] Task 3: Security headers — add helmet middleware (P0)
   - Acceptance: `helmet` is installed and applied as global middleware in `main.ts`. All API responses include `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and other helmet defaults. Integration test verifies headers are present on the `/health` endpoint response.
   - Files: `apps/api/src/main.ts`, `apps/api/package.json`, `tests/integration/security-headers.spec.ts`
+  - Completed: 2026-03-27 — helmet installed and applied in main.ts, 3 integration tests verify nosniff, X-Frame-Options, X-Powered-By removal
 
 - [ ] Task 4: Rate limiting — add @nestjs/throttler to the API (P0)
   - Acceptance: `@nestjs/throttler` is installed and configured globally (10 requests per 60 seconds per IP). The `/generate` endpoint returns 429 Too Many Requests when the limit is exceeded. The `/health` endpoint is excluded from throttling via `@SkipThrottle()`. Integration test confirms 429 after exceeding the limit.
