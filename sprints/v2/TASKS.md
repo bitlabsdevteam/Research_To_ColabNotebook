@@ -47,6 +47,7 @@
   - Files: `apps/api/src/pdf-parser/figure-extractor.service.ts`, `apps/api/src/pdf-parser/pdf-parser.module.ts`, `apps/api/src/generate/generate.service.ts`, `tests/unit/figure-extractor.spec.ts`
   - Completed: 2026-03-27 — FigureExtractorService using pdfjs-dist OPS, wired into GenerateService pipeline, 4 unit tests, graceful fallback on extraction failure
 
-- [ ] Task 10: Frontend API key header + .env.local example (P2)
+- [x] Task 10: Frontend API key header + .env.local example (P2)
   - Acceptance: An `.env.local.example` file documents available environment variables (`NEXT_PUBLIC_API_URL`, `CORS_ORIGIN`). README-style comments explain each variable. File is committed as a template (actual `.env.local` is gitignored).
   - Files: `.env.local.example`
+  - Completed: 2026-03-27 — .env.local.example with NEXT_PUBLIC_API_URL and CORS_ORIGIN documented
