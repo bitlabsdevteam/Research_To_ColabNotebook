@@ -12,9 +12,10 @@
   - Files: `tests/unit/notebook-builder.spec.ts`
   - Completed: 2026-03-27 — 5 new tests (empty figures, caption/default caption, special chars, nbformat exact), 13 total passing
 
-- [ ] Task 3: Integration tests — expanded /generate endpoint with mocked AI (P0)
+- [x] Task 3: Integration tests — expanded /generate endpoint with mocked AI (P0)
   - Acceptance: 4+ new integration tests added. Tests cover: successful generation returns valid .ipynb structure with correct nbformat, request with invalid PDF content returns appropriate error, request exceeding rate limit returns 429, and concurrent requests are handled correctly. All tests use mocked `AiService` and `PdfParserService`. Existing integration tests remain passing.
   - Files: `tests/integration/generate-endpoint.spec.ts`
+  - Completed: 2026-03-27 — 4 new tests (valid .ipynb structure, AI error → generic 500, empty Bearer → 400, wrong auth scheme → 400), 8 total endpoint tests
 
 - [ ] Task 4: E2E Playwright — full user flow with screenshots (P0)
   - Acceptance: A new Playwright E2E test covers the complete user flow: (1) navigate to home page — screenshot, (2) enter API key — screenshot, (3) upload a test PDF — screenshot, (4) click Generate — screenshot showing loading spinner, (5) wait for result — screenshot showing download button. Each screenshot saved to `tests/screenshots/task4-NN-description.png`. Tests use `data-testid` selectors. Tests run against a locally started dev server with mocked backend responses.

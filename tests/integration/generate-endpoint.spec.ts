@@ -4,9 +4,17 @@ import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 
 let app: INestApplication;
 let baseUrl: string;
+let mockGenerateNotebook: ReturnType<typeof vi.fn>;
+
+const mockCells = [
+  { cell_type: "markdown", source: "# Tutorial" },
+  { cell_type: "code", source: "print('hello')" },
+];
 
 describe("POST /generate — validation", () => {
   beforeAll(async () => {
+    mockGenerateNotebook = vi.fn().mockResolvedValue(mockCells);
+
     const { GenerateModule } = await import(
       "../../apps/api/src/generate/generate.module"
     );
@@ -17,7 +25,7 @@ describe("POST /generate — validation", () => {
     })
       .overrideProvider(AiService)
       .useValue({
-        generateNotebook: vi.fn().mockResolvedValue([]),
+        generateNotebook: mockGenerateNotebook,
       })
       .compile();
 
@@ -96,6 +104,96 @@ describe("POST /generate — validation", () => {
       body: formData,
     });
     expect(res.status).toBe(200);
+  });
+
+  it("returns valid .ipynb structure with nbformat and cells", async () => {
+    mockGenerateNotebook.mockResolvedValueOnce(mockCells);
+
+    const pdfBuffer = createMinimalPdf();
+    const formData = new FormData();
+    formData.append(
+      "pdf",
+      new Blob([pdfBuffer], { type: "application/pdf" }),
+      "paper.pdf"
+    );
+
+    const res = await fetch(`${baseUrl}/generate`, {
+      method: "POST",
+      headers: { Authorization: "Bearer sk-test-key" },
+      body: formData,
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.nbformat).toBe(4);
+    expect(body.metadata).toHaveProperty("colab");
+    expect(body.metadata).toHaveProperty("kernelspec");
+    expect(body.metadata.kernelspec.language).toBe("python");
+    expect(Array.isArray(body.cells)).toBe(true);
+    expect(body.cells.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("returns 500 with generic message when AI service fails", async () => {
+    mockGenerateNotebook.mockRejectedValueOnce(
+      new Error("OpenAI API rate limit for org-secret")
+    );
+
+    const pdfBuffer = createMinimalPdf();
+    const formData = new FormData();
+    formData.append(
+      "pdf",
+      new Blob([pdfBuffer], { type: "application/pdf" }),
+      "paper.pdf"
+    );
+
+    const res = await fetch(`${baseUrl}/generate`, {
+      method: "POST",
+      headers: { Authorization: "Bearer sk-test-key" },
+      body: formData,
+    });
+
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.message).toContain("Generation failed");
+    // Must NOT leak internal error details
+    expect(body.message).not.toContain("OpenAI");
+    expect(body.message).not.toContain("org-secret");
+  });
+
+  it("returns 400 when Bearer token is empty (just 'Bearer ')", async () => {
+    const pdfBuffer = createMinimalPdf();
+    const formData = new FormData();
+    formData.append(
+      "pdf",
+      new Blob([pdfBuffer], { type: "application/pdf" }),
+      "paper.pdf"
+    );
+
+    const res = await fetch(`${baseUrl}/generate`, {
+      method: "POST",
+      headers: { Authorization: "Bearer " },
+      body: formData,
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 when Authorization uses wrong scheme (Basic instead of Bearer)", async () => {
+    const pdfBuffer = createMinimalPdf();
+    const formData = new FormData();
+    formData.append(
+      "pdf",
+      new Blob([pdfBuffer], { type: "application/pdf" }),
+      "paper.pdf"
+    );
+
+    const res = await fetch(`${baseUrl}/generate`, {
+      method: "POST",
+      headers: { Authorization: "Basic sk-test-key" },
+      body: formData,
+    });
+
+    expect(res.status).toBe(400);
   });
 });
 
