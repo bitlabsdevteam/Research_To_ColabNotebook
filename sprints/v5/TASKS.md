@@ -47,6 +47,7 @@
   - Files: `apps/web/app/notebook/[id]/page.tsx`, `apps/web/app/lib/supabase.ts`
   - Completed: 2026-03-29 — page.tsx passes params.id to NotebookViewer client component; NotebookViewer fetches from Supabase or window.__supabase_mock_notebook; markdown cells as div (whitespace-pre-wrap), code cells as pre/code; 404 state; download + open-colab buttons; createServerSupabaseClient() added to supabase.ts; 6/6 E2E green; 117/118 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
-- [ ] Task 10: Update Playwright smoke test and verify all tests pass (P1)
+- [x] Task 10: Update Playwright smoke test and verify all tests pass (P1)
   - Acceptance: New `tests/e2e/sprint-v5-smoke.spec.ts` covers: (a) light theme toggle flip, (b) dark mode preserved by default, (c) save-indicator visible after mocked generation + mocked Supabase insert, (d) NotebooksPanel renders mocked notebook rows, (e) `/notebook/[id]` renders mocked notebook cells; existing 78 Playwright tests and 146 vitest tests all still pass; screenshots saved as `tests/screenshots/task10v5-01` through `task10v5-05`
   - Files: `tests/e2e/sprint-v5-smoke.spec.ts`, `tests/screenshots/`
+  - Completed: 2026-03-29 — sprint-v5-smoke.spec.ts: 5/5 scenarios pass; 122/123 total Playwright (1 legacy skip unchanged) + 149 vitest all green; semgrep clean, 0 npm vulns; sprint v5 complete
