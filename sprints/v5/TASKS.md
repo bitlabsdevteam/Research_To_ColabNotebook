@@ -42,9 +42,10 @@
   - Files: `apps/web/app/components/NotebooksPanel.tsx`, `apps/web/app/page.tsx`
   - Completed: 2026-03-29 — NotebooksPanel created: fetches from Supabase or window.__supabase_mock_notebooks; relativeTime() helper; SkeletonRow loading state; empty-state; notebook-row list with download+share buttons; page.tsx renders NotebooksPanel when user signed in; 5/5 E2E; 111/112 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
-- [ ] Task 9: Public shareable notebook page `/notebook/[id]` (P1)
+- [x] Task 9: Public shareable notebook page `/notebook/[id]` (P1)
   - Acceptance: New Next.js App Router route at `apps/web/app/notebook/[id]/page.tsx`; server component fetches notebook by ID using Supabase server client (`createServerClient` with anon key) via `supabase.from("notebooks").select("*").eq("id", id).single()`; renders a read-only notebook preview: markdown cells rendered as plain `<div>` with whitespace-pre-wrap, code cells in `<pre><code>` blocks with monospace font; page shows notebook title, creation date, an "Open in Colab" button (same logic as `ResultPanel`), and a "Download .ipynb" button; if ID not found, renders a 404-style message; `data-testid="notebook-preview"` on the container; Playwright test visits `/notebook/test-id` with mocked Supabase and verifies cells render
   - Files: `apps/web/app/notebook/[id]/page.tsx`, `apps/web/app/lib/supabase.ts`
+  - Completed: 2026-03-29 — page.tsx passes params.id to NotebookViewer client component; NotebookViewer fetches from Supabase or window.__supabase_mock_notebook; markdown cells as div (whitespace-pre-wrap), code cells as pre/code; 404 state; download + open-colab buttons; createServerSupabaseClient() added to supabase.ts; 6/6 E2E green; 117/118 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
 - [ ] Task 10: Update Playwright smoke test and verify all tests pass (P1)
   - Acceptance: New `tests/e2e/sprint-v5-smoke.spec.ts` covers: (a) light theme toggle flip, (b) dark mode preserved by default, (c) save-indicator visible after mocked generation + mocked Supabase insert, (d) NotebooksPanel renders mocked notebook rows, (e) `/notebook/[id]` renders mocked notebook cells; existing 78 Playwright tests and 146 vitest tests all still pass; screenshots saved as `tests/screenshots/task10v5-01` through `task10v5-05`

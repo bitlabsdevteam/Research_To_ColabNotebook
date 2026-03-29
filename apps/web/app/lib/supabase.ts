@@ -16,3 +16,10 @@ export function createBrowserSupabaseClient() {
   if (!url || !anonKey) return null;
   return createClient(url, anonKey);
 }
+
+/** Server-side Supabase client — same anon key, no browser-only APIs */
+export function createServerSupabaseClient() {
+  const { url, anonKey } = getSupabaseConfig();
+  if (!url || !anonKey) return null;
+  return createClient(url, anonKey);
+}
