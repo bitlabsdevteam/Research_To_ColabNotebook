@@ -10,6 +10,7 @@ import { Footer } from "./components/Footer";
 import { useApiKey } from "./context/ApiKeyContext";
 import { useTheme } from "./context/ThemeProvider";
 import { useSupabaseSession } from "./context/SupabaseProvider";
+import { NotebooksPanel } from "./components/NotebooksPanel";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -355,6 +356,8 @@ export default function Home() {
         </div>
 
         {notebook && <ResultPanel notebook={notebook} shareId={shareId} />}
+
+        {user && <NotebooksPanel user={user} />}
       </main>
 
       <Footer />
