@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { downloadNotebook, openInColab } from "../lib/colab";
 
 interface ResultPanelProps {
@@ -67,6 +68,14 @@ function ExternalLinkIcon() {
 }
 
 export function ResultPanel({ notebook, shareId }: ResultPanelProps) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopyLink() {
+    const url = `${window.location.origin}/notebook/${shareId}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
   return (
     <div
       data-testid="result-panel"
@@ -156,6 +165,44 @@ export function ResultPanel({ notebook, shareId }: ResultPanelProps) {
             </a>
           </span>
         </div>
+      )}
+
+      {/* Copy link button — only when shareId present */}
+      {shareId && (
+        <button
+          data-testid="copy-link-button"
+          onClick={handleCopyLink}
+          style={{
+            width: "100%",
+            height: "36px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "var(--space-2)",
+            backgroundColor: copied ? "rgba(16,185,129,0.1)" : "transparent",
+            border: "1px solid var(--color-border)",
+            borderRadius: "var(--radius-md)",
+            color: copied ? "var(--color-success)" : "var(--color-text-secondary)",
+            fontSize: "var(--font-size-sm)",
+            fontWeight: 500,
+            fontFamily: "inherit",
+            cursor: "pointer",
+            marginBottom: "var(--space-3)",
+            transition: "background-color 0.15s, color 0.15s",
+          }}
+        >
+          {copied ? (
+            "Copied!"
+          ) : (
+            <>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              Copy link
+            </>
+          )}
+        </button>
       )}
 
       {/* Action buttons */}

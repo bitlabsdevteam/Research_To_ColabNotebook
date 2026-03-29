@@ -32,9 +32,10 @@
   - Files: `apps/web/app/page.tsx`, `apps/web/app/components/ResultPanel.tsx`
   - Completed: 2026-03-29 — page.tsx: shareId state + auto-save after generate (real Supabase or window.__supabase_mock_save_id for tests); ResultPanel accepts shareId prop + shows save-indicator with share link; save skipped silently when user null; 4/4 E2E green; 101/102 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
-- [ ] Task 7: Share link copy button in ResultPanel (P1)
+- [x] Task 7: Share link copy button in ResultPanel (P1)
   - Acceptance: When `shareId` is present, `ResultPanel` shows a "Copy link" button (`data-testid="copy-link-button"`) that writes `${window.location.origin}/notebook/${shareId}` to the clipboard via `navigator.clipboard.writeText()`; after copy, the button text changes to "Copied!" for 2 seconds then reverts; Playwright test verifies clipboard write and button text transition
   - Files: `apps/web/app/components/ResultPanel.tsx`
+  - Completed: 2026-03-29 — copy-link-button added to ResultPanel when shareId present; handleCopyLink writes origin+/notebook/shareId to clipboard; copied state toggles text "Copy link"→"Copied!" for 2s then reverts; 5/5 E2E green; 106/107 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
 - [ ] Task 8: "My Notebooks" history panel (P1)
   - Acceptance: When user is signed in, a `<NotebooksPanel />` component appears below the form card; it fetches `supabase.from("notebooks").select("id, title, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10)` on mount; renders a list of notebook rows with `data-testid="notebook-row"` containing title, relative time ("2 hours ago"), a download button (`data-testid="notebook-download-{id}"`) that triggers client-side `.ipynb` download from the stored JSON, and a share-link copy button; shows a skeleton loader while fetching; empty state says "No notebooks yet — generate your first one above"; Playwright test mocks Supabase select and verifies list renders
