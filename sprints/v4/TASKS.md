@@ -47,6 +47,7 @@
   - Files: `apps/web/app/page.tsx`
   - Completed: 2026-03-28 — Three step sections with step-label class (data-testid=step-label-1/2/3) and two <hr data-testid=step-divider> dividers; card retains backdrop-filter:blur(12px); 7 Playwright tests green; 14 prior tests pass
 
-- [ ] Task 10: Update Playwright E2E screenshots and verify all tests pass (P1)
+- [x] Task 10: Update Playwright E2E screenshots and verify all tests pass (P1)
   - Acceptance: Run `npx playwright test` locally; all existing tests pass without modification (data-testid selectors unchanged); update screenshot baseline names in `tests/e2e/full-flow.spec.ts` to `task10-0N-description.png`; new screenshots captured in `tests/screenshots/`; `npx vitest run` also passes
   - Files: `tests/e2e/full-flow.spec.ts`, `tests/screenshots/`
+  - Completed: 2026-03-28 — full-flow.spec.ts screenshots renamed to task10-08..13; sprint-v4-smoke.spec.ts (7 tests) covers full redesigned flow end-to-end; 78/78 Playwright tests pass; 146/146 vitest tests pass; sprint v4 complete

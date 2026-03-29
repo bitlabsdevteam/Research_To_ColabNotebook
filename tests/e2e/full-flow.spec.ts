@@ -52,7 +52,7 @@ test.describe("Full User Flow", () => {
     // Step 1: Navigate to home page
     await page.goto("/");
     await page.screenshot({
-      path: "tests/screenshots/task4-01-landing-page.png",
+      path: "tests/screenshots/task10-08-landing-page.png",
     });
 
     // Verify key elements are visible
@@ -65,7 +65,7 @@ test.describe("Full User Flow", () => {
     const apiKeyInput = page.getByTestId("api-key-input");
     await apiKeyInput.fill("sk-test-key-for-e2e-flow");
     await page.screenshot({
-      path: "tests/screenshots/task4-02-api-key-entered.png",
+      path: "tests/screenshots/task10-09-api-key-entered.png",
     });
 
     // Button still disabled — no PDF yet
@@ -75,7 +75,7 @@ test.describe("Full User Flow", () => {
     const fileInput = page.getByTestId("pdf-file-input");
     await fileInput.setInputFiles(pdfPath);
     await page.screenshot({
-      path: "tests/screenshots/task4-03-pdf-uploaded.png",
+      path: "tests/screenshots/task10-10-pdf-uploaded.png",
     });
 
     // Verify file info is shown
@@ -100,14 +100,14 @@ test.describe("Full User Flow", () => {
 
     // Screenshot showing loading state (must be fast — spinner may be brief)
     await page.screenshot({
-      path: "tests/screenshots/task4-04-generating.png",
+      path: "tests/screenshots/task10-11-generating.png",
     });
 
     // Step 5: Wait for result panel to appear
     const resultPanel = page.getByTestId("result-panel");
     await expect(resultPanel).toBeVisible({ timeout: 10000 });
     await page.screenshot({
-      path: "tests/screenshots/task4-05-result-ready.png",
+      path: "tests/screenshots/task10-12-result-ready.png",
     });
 
     // Verify download and Colab buttons
@@ -139,7 +139,7 @@ test.describe("Full User Flow", () => {
     await expect(errorMsg).toContainText(/failed/i);
 
     await page.screenshot({
-      path: "tests/screenshots/task4-06-error-displayed.png",
+      path: "tests/screenshots/task10-13-error-displayed.png",
     });
 
     // Result panel should NOT be visible
