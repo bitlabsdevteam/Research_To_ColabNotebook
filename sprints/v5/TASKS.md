@@ -17,9 +17,10 @@
   - Files: `apps/web/app/components/Header.tsx`
   - Completed: 2026-03-29 — Header converted to "use client"; SunIcon/MoonIcon SVGs; theme-toggle button wired to useTheme().toggleTheme(); aria-label toggles; 5/5 E2E tests green; 87/88 Playwright + 149 vitest passing; semgrep clean, 0 npm vulns
 
-- [ ] Task 4: Two-column editorial hero layout for light mode (P0)
+- [x] Task 4: Two-column editorial hero layout for light mode (P0)
   - Acceptance: In light mode (`[data-theme="light"]`), the hero block switches from centered single-column to a two-column grid: left column has the display heading (56-72px, bold, tight `line-height: 1.05`, `letter-spacing: -0.03em`), right column has the subtitle text and a "Sign in with Google" CTA button (if unauthenticated); in dark mode the existing centered hero is unchanged; `data-testid="hero-block"`, `data-testid="app-title"`, `data-testid="app-description"` all preserved; Playwright test checks two-column layout in light mode
   - Files: `apps/web/app/page.tsx`, `apps/web/app/globals.css`
+  - Completed: 2026-03-29 — page.tsx imports useTheme + useSupabaseSession; hero-block conditionally renders grid (3fr/2fr) in light mode; app-title uses clamp(3rem,5vw,6xl) in light mode; sign-in-cta button shown when user==null; 5/5 E2E tests green; 92/93 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
 - [ ] Task 5: Google OAuth sign-in flow (P0)
   - Acceptance: Clicking "Sign in with Google" (or a `data-testid="sign-in-button"` in the header) calls `supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } })`; after OAuth redirect, `useSupabaseSession()` returns a non-null `user`; header replaces the sign-in button with a user avatar (`<img>` from `user.user_metadata.avatar_url`, `data-testid="user-avatar"`) and a "Sign out" button (`data-testid="sign-out-button"`); signing out calls `supabase.auth.signOut()` and clears session; Playwright test mocks the OAuth redirect and verifies header state transitions

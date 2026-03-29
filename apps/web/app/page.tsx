@@ -8,11 +8,16 @@ import { ResultPanel } from "./components/ResultPanel";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { useApiKey } from "./context/ApiKeyContext";
+import { useTheme } from "./context/ThemeProvider";
+import { useSupabaseSession } from "./context/SupabaseProvider";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export default function Home() {
   const { apiKey } = useApiKey();
+  const { theme } = useTheme();
+  const { user } = useSupabaseSession();
+  const isLight = theme === "light";
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [notebook, setNotebook] = useState<object | null>(null);
@@ -102,47 +107,103 @@ export default function Home() {
         <div
           data-testid="hero-block"
           className="animate-fade-up"
-          style={{ textAlign: "center", maxWidth: "560px" }}
+          style={isLight ? {
+            display: "grid",
+            gridTemplateColumns: "3fr 2fr",
+            gap: "var(--space-10)",
+            width: "100%",
+            maxWidth: "1100px",
+            alignItems: "start",
+          } : {
+            textAlign: "center",
+            maxWidth: "560px",
+          }}
         >
-          <h1
-            data-testid="app-title"
-            style={{
-              fontSize: "clamp(2rem, 5vw, var(--font-size-5xl))",
-              fontWeight: 700,
-              letterSpacing: "-0.03em",
-              lineHeight: 1.1,
-              color: "var(--color-text-primary)",
-              marginBottom: "var(--space-4)",
-            }}
-          >
-            Paper2Notebook
-          </h1>
-          <p
-            data-testid="hero-heading"
-            style={{
-              fontSize: "var(--font-size-xl)",
-              fontWeight: 500,
-              color: "var(--color-text-primary)",
-              lineHeight: 1.4,
-              marginBottom: "var(--space-3)",
-            }}
-          >
-            Turn any research paper into a{" "}
-            <span style={{ color: "var(--color-accent-light)" }}>
-              Colab tutorial
-            </span>{" "}
-            — instantly.
-          </p>
-          <p
-            data-testid="app-description"
-            style={{
-              fontSize: "var(--font-size-base)",
-              color: "var(--color-text-secondary)",
-              lineHeight: 1.6,
-            }}
-          >
-            Paste your OpenAI key, drop a PDF, done.
-          </p>
+          {/* Left column (or single column in dark mode) */}
+          <div>
+            <h1
+              data-testid="app-title"
+              style={{
+                fontSize: isLight
+                  ? "clamp(3rem, 5vw, var(--font-size-6xl))"
+                  : "clamp(2rem, 5vw, var(--font-size-5xl))",
+                fontWeight: 700,
+                letterSpacing: "-0.03em",
+                lineHeight: isLight ? 1.05 : 1.1,
+                color: "var(--color-text-primary)",
+                marginBottom: "var(--space-4)",
+              }}
+            >
+              Paper2Notebook
+            </h1>
+            <p
+              data-testid="hero-heading"
+              style={{
+                fontSize: "var(--font-size-xl)",
+                fontWeight: 500,
+                color: "var(--color-text-primary)",
+                lineHeight: 1.4,
+                marginBottom: "var(--space-3)",
+              }}
+            >
+              Turn any research paper into a{" "}
+              <span style={{ color: "var(--color-accent-light)" }}>
+                Colab tutorial
+              </span>{" "}
+              — instantly.
+            </p>
+            {!isLight && (
+              <p
+                data-testid="app-description"
+                style={{
+                  fontSize: "var(--font-size-base)",
+                  color: "var(--color-text-secondary)",
+                  lineHeight: 1.6,
+                }}
+              >
+                Paste your OpenAI key, drop a PDF, done.
+              </p>
+            )}
+          </div>
+
+          {/* Right column — light mode only */}
+          {isLight && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+              <p
+                data-testid="app-description"
+                style={{
+                  fontSize: "var(--font-size-base)",
+                  color: "var(--color-text-secondary)",
+                  lineHeight: 1.7,
+                }}
+              >
+                Paste your OpenAI key, drop a PDF, and get a fully-runnable
+                Colab notebook instantly.
+              </p>
+              {!user && (
+                <button
+                  data-testid="sign-in-cta"
+                  style={{
+                    alignSelf: "flex-start",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "var(--space-2)",
+                    padding: "var(--space-3) var(--space-6)",
+                    backgroundColor: "var(--color-accent)",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "var(--radius-md)",
+                    fontSize: "var(--font-size-base)",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  Sign in with Google →
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Form card */}
