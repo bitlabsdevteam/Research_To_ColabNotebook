@@ -42,9 +42,10 @@
   - Files: `apps/web/app/components/ResultPanel.tsx`
   - Completed: 2026-03-28 — animate-slide-up card with emerald border/glow, CheckCircle icon (result-check-icon), "Notebook ready!" heading (result-heading), indigo gradient download button, outlined Colab-orange open button with ExternalLink icon; hover lift on both; 7 Playwright tests green
 
-- [ ] Task 9: Glass card wrapper and step dividers in main form (P1)
+- [x] Task 9: Glass card wrapper and step dividers in main form (P1)
   - Acceptance: The three form sections (ApiKeyInput, PdfUpload, GenerateButton) are wrapped in a single glass card (`backdrop-filter: blur(12px)`, `var(--color-bg-surface)` background, 1px border using `var(--color-border)`); horizontal `<hr>` dividers with `var(--color-border)` separate the three steps; each step has a small numbered label ("1 · API Key", "2 · Upload PDF", "3 · Generate") in muted text above its control
   - Files: `apps/web/app/page.tsx`
+  - Completed: 2026-03-28 — Three step sections with step-label class (data-testid=step-label-1/2/3) and two <hr data-testid=step-divider> dividers; card retains backdrop-filter:blur(12px); 7 Playwright tests green; 14 prior tests pass
 
 - [ ] Task 10: Update Playwright E2E screenshots and verify all tests pass (P1)
   - Acceptance: Run `npx playwright test` locally; all existing tests pass without modification (data-testid selectors unchanged); update screenshot baseline names in `tests/e2e/full-flow.spec.ts` to `task10-0N-description.png`; new screenshots captured in `tests/screenshots/`; `npx vitest run` also passes

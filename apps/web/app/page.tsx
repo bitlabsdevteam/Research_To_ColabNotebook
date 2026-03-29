@@ -161,12 +161,50 @@ export default function Home() {
             WebkitBackdropFilter: "blur(12px)",
             display: "flex",
             flexDirection: "column",
-            gap: "var(--space-6)",
           }}
         >
-          <ApiKeyInput />
-          <PdfUpload onFileSelect={setPdfFile} />
-          <GenerateButton disabled={!canGenerate} onClick={handleGenerate} />
+          {/* Step 1 */}
+          <div>
+            <p
+              data-testid="step-label-1"
+              className="step-label"
+            >
+              1 · API Key
+            </p>
+            <ApiKeyInput />
+          </div>
+
+          <hr
+            data-testid="step-divider"
+            className="step-divider"
+          />
+
+          {/* Step 2 */}
+          <div>
+            <p
+              data-testid="step-label-2"
+              className="step-label"
+            >
+              2 · Upload PDF
+            </p>
+            <PdfUpload onFileSelect={setPdfFile} />
+          </div>
+
+          <hr
+            data-testid="step-divider"
+            className="step-divider"
+          />
+
+          {/* Step 3 */}
+          <div>
+            <p
+              data-testid="step-label-3"
+              className="step-label"
+            >
+              3 · Generate
+            </p>
+            <GenerateButton disabled={!canGenerate} onClick={handleGenerate} />
+          </div>
 
           {isLoading && (
             <div
