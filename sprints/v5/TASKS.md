@@ -12,9 +12,10 @@
   - Files: `apps/web/app/globals.css`, `apps/web/app/context/ThemeProvider.tsx`, `apps/web/app/layout.tsx`
   - Completed: 2026-03-29 — [data-theme="light"] cream token block in globals.css; ThemeProvider reads localStorage + sets document.documentElement.dataset.theme in useEffect; layout.tsx has inline script for pre-paint FOUC prevention + data-theme="dark" default; createBrowserSupabaseClient() null-guarded against missing env vars; 4 E2E tests green; 149/149 vitest + 82/83 Playwright all passing
 
-- [ ] Task 3: Theme toggle button in Header (P0)
+- [x] Task 3: Theme toggle button in Header (P0)
   - Acceptance: Header renders a sun/moon SVG toggle button (`data-testid="theme-toggle"`) between the brand title and the sign-in area; clicking it switches `data-theme` between `"dark"` and `"light"` and persists to `localStorage`; button shows sun icon in dark mode, moon icon in light mode; Playwright test clicks toggle, verifies theme attribute flips, clicks again, verifies it flips back
   - Files: `apps/web/app/components/Header.tsx`
+  - Completed: 2026-03-29 — Header converted to "use client"; SunIcon/MoonIcon SVGs; theme-toggle button wired to useTheme().toggleTheme(); aria-label toggles; 5/5 E2E tests green; 87/88 Playwright + 149 vitest passing; semgrep clean, 0 npm vulns
 
 - [ ] Task 4: Two-column editorial hero layout for light mode (P0)
   - Acceptance: In light mode (`[data-theme="light"]`), the hero block switches from centered single-column to a two-column grid: left column has the display heading (56-72px, bold, tight `line-height: 1.05`, `letter-spacing: -0.03em`), right column has the subtitle text and a "Sign in with Google" CTA button (if unauthenticated); in dark mode the existing centered hero is unchanged; `data-testid="hero-block"`, `data-testid="app-title"`, `data-testid="app-description"` all preserved; Playwright test checks two-column layout in light mode
