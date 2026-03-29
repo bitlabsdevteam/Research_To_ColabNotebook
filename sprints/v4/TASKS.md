@@ -17,9 +17,10 @@
   - Files: `apps/web/app/components/Header.tsx`, `apps/web/app/components/Footer.tsx`, `apps/web/app/page.tsx`
   - Completed: 2026-03-28 — Header: sticky, 56px, logo mark SVG + brand title + GitHub icon link with hover states; Footer: border-top, "Built with Paper2Notebook · v4"; all existing tests pass; 7 Playwright tests green
 
-- [ ] Task 4: Redesign ApiKeyInput — polished dark input with lock icon and eye toggle (P0)
+- [x] Task 4: Redesign ApiKeyInput — polished dark input with lock icon and eye toggle (P0)
   - Acceptance: Input sits inside a glass card section; a lock SVG icon is shown on the left of the field; an eye/eye-off SVG toggle on the right switches `type` between `password` and `text`; focus state shows `var(--color-border-focus)` ring; filled state shows a green checkmark badge instead of plain "Key set" text; all `data-testid` attributes preserved
   - Files: `apps/web/app/components/ApiKeyInput.tsx`
+  - Completed: 2026-03-28 — Lock SVG left-icon, eye/eye-off toggle (data-testid=api-key-eye-toggle), focus border glow, filled green pill badge with checkmark; all prior api-key-input.spec.ts tests pass; 8 Playwright tests green
 
 - [ ] Task 5: Redesign PdfUpload — animated dropzone with upload icon (P0)
   - Acceptance: Dropzone displays a cloud-upload SVG icon (40px) above the helper text; drag-over state triggers `var(--color-accent-glow)` background and border-color pulse animation; file-selected state shows a document icon with file name and size in a pill; error state shows a red pill with shake animation; all `data-testid` attributes preserved
