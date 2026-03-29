@@ -54,57 +54,167 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 gap-8">
-      <div className="text-center">
-        <h1 data-testid="app-title" className="text-4xl font-bold mb-4">
-          Paper2Notebook
-        </h1>
-        <p data-testid="app-description" className="text-lg text-gray-600">
-          Convert research papers into interactive Google Colab tutorials
-        </p>
-      </div>
-      <ApiKeyInput />
-      <PdfUpload onFileSelect={setPdfFile} />
-      <GenerateButton disabled={!canGenerate} onClick={handleGenerate} />
+    <div
+      className="dot-grid"
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "var(--color-bg-base)",
+        position: "relative",
+        overflowX: "hidden",
+      }}
+    >
+      {/* Radial spotlight behind the form card */}
+      <div
+        data-testid="hero-spotlight"
+        style={{
+          position: "absolute",
+          top: "30%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "800px",
+          height: "600px",
+          background:
+            "radial-gradient(ellipse at center, var(--color-accent-glow) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+          animation: "spotlight 4s ease-in-out infinite",
+        }}
+      />
 
-      {isLoading && (
+      <main
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          padding: "var(--space-8)",
+          gap: "var(--space-8)",
+        }}
+      >
+        {/* Hero text block */}
         <div
-          data-testid="loading-indicator"
-          className="flex items-center gap-3 text-blue-600"
+          data-testid="hero-block"
+          className="animate-fade-up"
+          style={{ textAlign: "center", maxWidth: "560px" }}
         >
-          <svg
-            className="animate-spin h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
+          <h1
+            data-testid="app-title"
+            style={{
+              fontSize: "clamp(2rem, 5vw, var(--font-size-5xl))",
+              fontWeight: 700,
+              letterSpacing: "-0.03em",
+              lineHeight: 1.1,
+              color: "var(--color-text-primary)",
+              marginBottom: "var(--space-4)",
+            }}
           >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-            />
-          </svg>
-          <span>Generating notebook...</span>
+            Paper2Notebook
+          </h1>
+          <p
+            data-testid="hero-heading"
+            style={{
+              fontSize: "var(--font-size-xl)",
+              fontWeight: 500,
+              color: "var(--color-text-primary)",
+              lineHeight: 1.4,
+              marginBottom: "var(--space-3)",
+            }}
+          >
+            Turn any research paper into a{" "}
+            <span style={{ color: "var(--color-accent-light)" }}>
+              Colab tutorial
+            </span>{" "}
+            — instantly.
+          </p>
+          <p
+            data-testid="app-description"
+            style={{
+              fontSize: "var(--font-size-base)",
+              color: "var(--color-text-secondary)",
+              lineHeight: 1.6,
+            }}
+          >
+            Paste your OpenAI key, drop a PDF, done.
+          </p>
         </div>
-      )}
 
-      {error && (
-        <p
-          data-testid="error-message"
-          className="text-red-600 text-sm max-w-md text-center"
+        {/* Form card */}
+        <div
+          data-testid="form-card"
+          className="animate-fade-up-delay"
+          style={{
+            width: "100%",
+            maxWidth: "480px",
+            padding: "var(--space-8)",
+            backgroundColor: "var(--color-bg-surface)",
+            border: "1px solid var(--color-border)",
+            borderRadius: "var(--radius-xl)",
+            boxShadow: "var(--shadow-card)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--space-6)",
+          }}
         >
-          {error}
-        </p>
-      )}
+          <ApiKeyInput />
+          <PdfUpload onFileSelect={setPdfFile} />
+          <GenerateButton disabled={!canGenerate} onClick={handleGenerate} />
 
-      {notebook && <ResultPanel notebook={notebook} />}
-    </main>
+          {isLoading && (
+            <div
+              data-testid="loading-indicator"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--space-3)",
+                color: "var(--color-text-secondary)",
+                justifyContent: "center",
+              }}
+            >
+              <svg
+                className="animate-spin h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                style={{ width: "20px", height: "20px", flexShrink: 0 }}
+              >
+                <circle
+                  style={{ opacity: 0.25 }}
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  style={{ opacity: 0.75 }}
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              <span>Generating notebook...</span>
+            </div>
+          )}
+
+          {error && (
+            <p
+              data-testid="error-message"
+              style={{
+                color: "var(--color-error)",
+                fontSize: "var(--font-size-sm)",
+                textAlign: "center",
+              }}
+            >
+              {error}
+            </p>
+          )}
+        </div>
+
+        {notebook && <ResultPanel notebook={notebook} />}
+      </main>
+    </div>
   );
 }

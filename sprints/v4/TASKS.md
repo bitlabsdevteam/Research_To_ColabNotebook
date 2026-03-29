@@ -7,9 +7,10 @@
   - Files: `apps/web/app/globals.css`, `apps/web/app/layout.tsx`
   - Completed: 2026-03-28 — CSS custom properties, 7 keyframes (fadeUp/shimmer/bounceDot/shake/slideUp/pulse-border/spotlight), dot-grid texture, glass-card/step-label utility classes; layout.tsx uses Inter via next/font/google (Geist not bundled without extra package); 4 Playwright tests green
 
-- [ ] Task 2: Hero background and page scaffold (P0)
+- [x] Task 2: Hero background and page scaffold (P0)
   - Acceptance: `page.tsx` renders a full-screen dark page with a radial gradient spotlight centered behind the card, a dot-grid texture overlay, staggered `fadeUp` animation on the hero text block and card (card delayed 150ms); page still passes Playwright smoke check (all data-testid elements present)
   - Files: `apps/web/app/page.tsx`
+  - Completed: 2026-03-28 — Full-screen dark scaffold with dot-grid class, radial spotlight div, hero heading/subheading with animate-fade-up, form card with animate-fade-up-delay; all existing data-testid selectors preserved; 6 Playwright tests green
 
 - [ ] Task 3: Branded header and footer components (P0)
   - Acceptance: A new `<Header>` component renders a sticky top bar with the Paper2Notebook logo mark (SVG) and title on the left, and a GitHub icon link on the right, styled with `var(--color-bg-surface)` and a bottom border; a `<Footer>` renders a centered muted line at the bottom; both are wired into `page.tsx`
