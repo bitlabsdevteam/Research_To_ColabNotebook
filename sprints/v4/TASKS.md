@@ -22,9 +22,10 @@
   - Files: `apps/web/app/components/ApiKeyInput.tsx`
   - Completed: 2026-03-28 — Lock SVG left-icon, eye/eye-off toggle (data-testid=api-key-eye-toggle), focus border glow, filled green pill badge with checkmark; all prior api-key-input.spec.ts tests pass; 8 Playwright tests green
 
-- [ ] Task 5: Redesign PdfUpload — animated dropzone with upload icon (P0)
+- [x] Task 5: Redesign PdfUpload — animated dropzone with upload icon (P0)
   - Acceptance: Dropzone displays a cloud-upload SVG icon (40px) above the helper text; drag-over state triggers `var(--color-accent-glow)` background and border-color pulse animation; file-selected state shows a document icon with file name and size in a pill; error state shows a red pill with shake animation; all `data-testid` attributes preserved
   - Files: `apps/web/app/components/PdfUpload.tsx`
+  - Completed: 2026-03-28 — CloudUpload SVG icon (data-testid=pdf-upload-icon), helper text block (data-testid=pdf-upload-helper), drag-over accent-glow + pulse-border animation, file-selected DocumentIcon (data-testid=pdf-file-icon) + file pill, error red pill with animate-shake; all prior tests pass; 6 Playwright tests green
 
 - [ ] Task 6: Redesign GenerateButton — gradient button with shimmer hover (P0)
   - Acceptance: Enabled state renders an indigo→violet gradient background with a shimmer sweep animation on hover (pseudo-element sliding left-to-right); disabled state uses `var(--color-bg-elevated)` with muted text and `cursor-not-allowed`; button has 48px height and `--radius-md` corners; `data-testid="generate-button"` preserved

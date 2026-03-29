@@ -9,6 +9,54 @@ interface PdfUploadProps {
   onFileSelect: (file: File | null) => void;
 }
 
+function CloudUploadIcon() {
+  return (
+    <svg
+      width="40"
+      height="40"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="16 16 12 12 8 16" />
+      <line x1="12" y1="12" x2="12" y2="21" />
+      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
+    </svg>
+  );
+}
+
+function DocumentIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  );
+}
+
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function PdfUpload({ onFileSelect }: PdfUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -49,28 +97,30 @@ export function PdfUpload({ onFileSelect }: PdfUploadProps) {
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragOver(false);
-      const dropped = e.dataTransfer.files[0] ?? null;
-      validateAndSetFile(dropped);
+      validateAndSetFile(e.dataTransfer.files[0] ?? null);
     },
     [validateAndSetFile]
   );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const selected = e.target.files?.[0] ?? null;
-      validateAndSetFile(selected);
+      validateAndSetFile(e.target.files?.[0] ?? null);
     },
     [validateAndSetFile]
   );
 
-  function formatSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  }
+  const dropzoneBorderColor = isDragOver
+    ? "var(--color-accent)"
+    : file
+    ? "rgba(99,102,241,0.4)"
+    : "var(--color-border)";
+
+  const dropzoneBg = isDragOver
+    ? "var(--color-accent-glow)"
+    : "transparent";
 
   return (
-    <div className="w-full max-w-md">
+    <div style={{ width: "100%" }}>
       <div
         data-testid="pdf-dropzone"
         onDrop={handleDrop}
@@ -80,11 +130,16 @@ export function PdfUpload({ onFileSelect }: PdfUploadProps) {
         }}
         onDragLeave={() => setIsDragOver(false)}
         onClick={() => inputRef.current?.click()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-          isDragOver
-            ? "border-blue-500 bg-blue-50"
-            : "border-gray-300 hover:border-gray-400"
-        }`}
+        style={{
+          border: `2px dashed ${dropzoneBorderColor}`,
+          borderRadius: "var(--radius-lg)",
+          padding: "var(--space-8) var(--space-6)",
+          textAlign: "center",
+          cursor: "pointer",
+          backgroundColor: dropzoneBg,
+          animation: isDragOver ? "pulse-border 1s ease-in-out infinite" : "none",
+          transition: "border-color 0.2s, background-color 0.2s",
+        }}
       >
         <input
           ref={inputRef}
@@ -92,30 +147,114 @@ export function PdfUpload({ onFileSelect }: PdfUploadProps) {
           type="file"
           accept=".pdf"
           onChange={handleChange}
-          className="hidden"
+          style={{ display: "none" }}
         />
+
         {file ? (
-          <div>
-            <p data-testid="pdf-file-name" className="font-medium text-gray-800">
-              {file.name}
-            </p>
-            <p data-testid="pdf-file-size" className="text-sm text-gray-500 mt-1">
-              {formatSize(file.size)}
+          /* File-selected state */
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-3)" }}>
+            <span
+              data-testid="pdf-file-icon"
+              style={{ color: "var(--color-accent-light)" }}
+            >
+              <DocumentIcon />
+            </span>
+
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "var(--space-2)",
+                backgroundColor: "var(--color-bg-elevated)",
+                border: "1px solid var(--color-border)",
+                borderRadius: "var(--radius-full)",
+                padding: "var(--space-1) var(--space-3)",
+              }}
+            >
+              <span
+                data-testid="pdf-file-name"
+                style={{
+                  fontSize: "var(--font-size-sm)",
+                  fontWeight: 500,
+                  color: "var(--color-text-primary)",
+                  maxWidth: "220px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {file.name}
+              </span>
+              <span
+                data-testid="pdf-file-size"
+                style={{
+                  fontSize: "var(--font-size-xs)",
+                  color: "var(--color-text-muted)",
+                  flexShrink: 0,
+                }}
+              >
+                {formatSize(file.size)}
+              </span>
+            </div>
+
+            <p style={{ fontSize: "var(--font-size-xs)", color: "var(--color-text-muted)", margin: 0 }}>
+              Click to replace
             </p>
           </div>
         ) : (
-          <div>
-            <p className="text-gray-600">
-              Drag & drop a PDF here, or click to browse
-            </p>
-            <p className="text-sm text-gray-400 mt-1">Max {MAX_SIZE_MB} MB</p>
+          /* Empty state */
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-3)" }}>
+            <span
+              data-testid="pdf-upload-icon"
+              style={{
+                color: isDragOver ? "var(--color-accent-light)" : "var(--color-text-muted)",
+                transition: "color 0.2s",
+              }}
+            >
+              <CloudUploadIcon />
+            </span>
+
+            <div data-testid="pdf-upload-helper">
+              <p style={{
+                fontSize: "var(--font-size-sm)",
+                color: isDragOver ? "var(--color-accent-light)" : "var(--color-text-secondary)",
+                margin: "0 0 var(--space-1)",
+                transition: "color 0.2s",
+              }}>
+                {isDragOver ? "Drop to upload" : "Drag & drop a PDF, or click to browse"}
+              </p>
+              <p style={{
+                fontSize: "var(--font-size-xs)",
+                color: "var(--color-text-muted)",
+                margin: 0,
+              }}>
+                Max {MAX_SIZE_MB} MB
+              </p>
+            </div>
           </div>
         )}
       </div>
+
       {error && (
-        <p data-testid="pdf-error" className="mt-2 text-sm text-red-600">
+        <div
+          data-testid="pdf-error"
+          className="animate-shake"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "var(--space-1)",
+            marginTop: "var(--space-2)",
+            fontSize: "var(--font-size-xs)",
+            fontWeight: 500,
+            color: "var(--color-error)",
+            backgroundColor: "var(--color-error-glow)",
+            border: "1px solid rgba(248,113,113,0.25)",
+            borderRadius: "var(--radius-full)",
+            padding: "2px var(--space-3)",
+          }}
+        >
           {error}
-        </p>
+        </div>
       )}
     </div>
   );
