@@ -22,9 +22,10 @@
   - Files: `apps/web/app/page.tsx`, `apps/web/app/globals.css`
   - Completed: 2026-03-29 — page.tsx imports useTheme + useSupabaseSession; hero-block conditionally renders grid (3fr/2fr) in light mode; app-title uses clamp(3rem,5vw,6xl) in light mode; sign-in-cta button shown when user==null; 5/5 E2E tests green; 92/93 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
-- [ ] Task 5: Google OAuth sign-in flow (P0)
+- [x] Task 5: Google OAuth sign-in flow (P0)
   - Acceptance: Clicking "Sign in with Google" (or a `data-testid="sign-in-button"` in the header) calls `supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin } })`; after OAuth redirect, `useSupabaseSession()` returns a non-null `user`; header replaces the sign-in button with a user avatar (`<img>` from `user.user_metadata.avatar_url`, `data-testid="user-avatar"`) and a "Sign out" button (`data-testid="sign-out-button"`); signing out calls `supabase.auth.signOut()` and clears session; Playwright test mocks the OAuth redirect and verifies header state transitions
   - Files: `apps/web/app/components/Header.tsx`, `apps/web/app/context/SupabaseProvider.tsx`
+  - Completed: 2026-03-29 — SupabaseProvider exposes signInWithGoogle()/signOut() in context; mock session injected via __supabase_mock_session CustomEvent (safe: only activates when Supabase unconfigured); Header shows sign-in-button (unauthenticated) or user-avatar+sign-out-button (authenticated); 5/5 E2E green; 97/98 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
 - [ ] Task 6: Auto-save notebook to Supabase after generation (P0)
   - Acceptance: In `page.tsx`, after a successful `/generate` response and `setNotebook(data)`, if `user` is non-null, call `supabase.from("notebooks").insert({ user_id: user.id, title: pdfFile?.name.replace(".pdf","") ?? "Untitled", content: data })`; `ResultPanel` receives an optional `shareId` prop; if save succeeds, `ResultPanel` shows a "Saved to your account ✓" line (`data-testid="save-indicator"`) with the share link; if user is not signed in, the save is silently skipped (no error shown); Playwright test mocks Supabase insert and verifies `save-indicator` appears
