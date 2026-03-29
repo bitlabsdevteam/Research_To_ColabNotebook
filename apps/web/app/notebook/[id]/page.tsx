@@ -1,10 +1,11 @@
 import { NotebookViewer } from "./NotebookViewer";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default function NotebookPage({ params }: Props) {
+export default async function NotebookPage({ params }: Props) {
+  const { id } = await params;
   return (
     <div
       style={{
@@ -12,7 +13,7 @@ export default function NotebookPage({ params }: Props) {
         backgroundColor: "var(--color-bg-base)",
       }}
     >
-      <NotebookViewer id={params.id} />
+      <NotebookViewer id={id} />
     </div>
   );
 }
