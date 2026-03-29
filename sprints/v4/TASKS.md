@@ -37,9 +37,10 @@
   - Files: `apps/web/app/page.tsx`
   - Completed: 2026-03-28 — Three .animate-bounce-dot spans (data-testid=loading-dot) with 0/150/300ms stagger, loading-label text, error replaced with red pill div with animate-shake + info icon; 6 Playwright tests green
 
-- [ ] Task 8: Redesign ResultPanel — slide-up success card with distinct action buttons (P0)
+- [x] Task 8: Redesign ResultPanel — slide-up success card with distinct action buttons (P0)
   - Acceptance: `ResultPanel` wraps in a `slideUp` animation class on mount; shows an emerald checkmark circle icon and "Notebook ready!" heading; Download button is solid indigo with a download arrow icon; Open in Colab button is outlined with the Colab orange accent on text/border; both have hover lift effect (`translateY(-1px)` + shadow); `data-testid` attributes preserved
   - Files: `apps/web/app/components/ResultPanel.tsx`
+  - Completed: 2026-03-28 — animate-slide-up card with emerald border/glow, CheckCircle icon (result-check-icon), "Notebook ready!" heading (result-heading), indigo gradient download button, outlined Colab-orange open button with ExternalLink icon; hover lift on both; 7 Playwright tests green
 
 - [ ] Task 9: Glass card wrapper and step dividers in main form (P1)
   - Acceptance: The three form sections (ApiKeyInput, PdfUpload, GenerateButton) are wrapped in a single glass card (`backdrop-filter: blur(12px)`, `var(--color-bg-surface)` background, 1px border using `var(--color-border)`); horizontal `<hr>` dividers with `var(--color-border)` separate the three steps; each step has a small numbered label ("1 · API Key", "2 · Upload PDF", "3 · Generate") in muted text above its control
