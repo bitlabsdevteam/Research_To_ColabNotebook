@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ApiKeyProvider } from "./context/ApiKeyContext";
+import { SupabaseProvider } from "./context/SupabaseProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +26,9 @@ export default function RootLayout({
         className={`${inter.className} min-h-screen antialiased`}
         style={{ backgroundColor: "var(--color-bg-base)", color: "var(--color-text-primary)" }}
       >
-        <ApiKeyProvider>{children}</ApiKeyProvider>
+        <SupabaseProvider>
+          <ApiKeyProvider>{children}</ApiKeyProvider>
+        </SupabaseProvider>
       </body>
     </html>
   );
