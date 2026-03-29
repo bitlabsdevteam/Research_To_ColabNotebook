@@ -173,47 +173,66 @@ export default function Home() {
               data-testid="loading-indicator"
               style={{
                 display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
                 gap: "var(--space-3)",
-                color: "var(--color-text-secondary)",
-                justifyContent: "center",
               }}
             >
-              <svg
-                className="animate-spin h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                style={{ width: "20px", height: "20px", flexShrink: 0 }}
+              {/* Three bouncing dots */}
+              <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    data-testid="loading-dot"
+                    className="animate-bounce-dot"
+                    style={{
+                      display: "inline-block",
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "var(--radius-full)",
+                      backgroundColor: "var(--color-accent-light)",
+                      animationDelay: `${i * 0.15}s`,
+                    }}
+                  />
+                ))}
+              </div>
+              <span
+                data-testid="loading-label"
+                style={{
+                  fontSize: "var(--font-size-sm)",
+                  color: "var(--color-text-secondary)",
+                }}
               >
-                <circle
-                  style={{ opacity: 0.25 }}
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  style={{ opacity: 0.75 }}
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              <span>Generating notebook...</span>
+                Generating your notebook…
+              </span>
             </div>
           )}
 
           {error && (
-            <p
+            <div
               data-testid="error-message"
+              className="animate-shake"
               style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "var(--space-2)",
+                padding: "var(--space-2) var(--space-4)",
+                backgroundColor: "var(--color-error-glow)",
+                border: "1px solid rgba(248,113,113,0.3)",
+                borderRadius: "var(--radius-full)",
                 color: "var(--color-error)",
                 fontSize: "var(--font-size-sm)",
-                textAlign: "center",
+                fontWeight: 500,
               }}
             >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
               {error}
-            </p>
+            </div>
           )}
         </div>
 

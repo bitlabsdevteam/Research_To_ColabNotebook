@@ -32,9 +32,10 @@
   - Files: `apps/web/app/components/GenerateButton.tsx`
   - Completed: 2026-03-28 — Indigo→violet linear-gradient, .btn-shimmer span sweeps on hover via shimmer keyframe in globals.css, disabled=bg-elevated+muted text, 48px height, hover lift+shadow; 6 Playwright tests green
 
-- [ ] Task 7: Redesign loading state — three bouncing dots with label (P0)
+- [x] Task 7: Redesign loading state — three bouncing dots with label (P0)
   - Acceptance: The `isLoading` block in `page.tsx` is replaced with three animated dots (each using `bounceDot` keyframe with staggered `animation-delay`) and the text "Generating your notebook…" in muted color; `data-testid="loading-indicator"` is on the container; error message uses a red pill badge with the `shake` keyframe on mount
   - Files: `apps/web/app/page.tsx`
+  - Completed: 2026-03-28 — Three .animate-bounce-dot spans (data-testid=loading-dot) with 0/150/300ms stagger, loading-label text, error replaced with red pill div with animate-shake + info icon; 6 Playwright tests green
 
 - [ ] Task 8: Redesign ResultPanel — slide-up success card with distinct action buttons (P0)
   - Acceptance: `ResultPanel` wraps in a `slideUp` animation class on mount; shows an emerald checkmark circle icon and "Notebook ready!" heading; Download button is solid indigo with a download arrow icon; Open in Colab button is outlined with the Colab orange accent on text/border; both have hover lift effect (`translateY(-1px)` + shadow); `data-testid` attributes preserved

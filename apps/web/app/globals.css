@@ -164,6 +164,11 @@ body {
   animation: shake 0.4s ease-out both;
 }
 
+/* Bouncing dot — delay is set inline per dot */
+.animate-bounce-dot {
+  animation: bounceDot 1.2s ease-in-out infinite;
+}
+
 /* Glass card */
 .glass-card {
   background: var(--color-bg-surface);
