@@ -27,9 +27,10 @@
   - Files: `apps/web/app/components/Header.tsx`, `apps/web/app/context/SupabaseProvider.tsx`
   - Completed: 2026-03-29 — SupabaseProvider exposes signInWithGoogle()/signOut() in context; mock session injected via __supabase_mock_session CustomEvent (safe: only activates when Supabase unconfigured); Header shows sign-in-button (unauthenticated) or user-avatar+sign-out-button (authenticated); 5/5 E2E green; 97/98 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
-- [ ] Task 6: Auto-save notebook to Supabase after generation (P0)
+- [x] Task 6: Auto-save notebook to Supabase after generation (P0)
   - Acceptance: In `page.tsx`, after a successful `/generate` response and `setNotebook(data)`, if `user` is non-null, call `supabase.from("notebooks").insert({ user_id: user.id, title: pdfFile?.name.replace(".pdf","") ?? "Untitled", content: data })`; `ResultPanel` receives an optional `shareId` prop; if save succeeds, `ResultPanel` shows a "Saved to your account ✓" line (`data-testid="save-indicator"`) with the share link; if user is not signed in, the save is silently skipped (no error shown); Playwright test mocks Supabase insert and verifies `save-indicator` appears
   - Files: `apps/web/app/page.tsx`, `apps/web/app/components/ResultPanel.tsx`
+  - Completed: 2026-03-29 — page.tsx: shareId state + auto-save after generate (real Supabase or window.__supabase_mock_save_id for tests); ResultPanel accepts shareId prop + shows save-indicator with share link; save skipped silently when user null; 4/4 E2E green; 101/102 Playwright + 149 vitest; semgrep clean, 0 npm vulns
 
 - [ ] Task 7: Share link copy button in ResultPanel (P1)
   - Acceptance: When `shareId` is present, `ResultPanel` shows a "Copy link" button (`data-testid="copy-link-button"`) that writes `${window.location.origin}/notebook/${shareId}` to the clipboard via `navigator.clipboard.writeText()`; after copy, the button text changes to "Copied!" for 2 seconds then reverts; Playwright test verifies clipboard write and button text transition

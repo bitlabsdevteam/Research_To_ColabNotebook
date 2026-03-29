@@ -22,6 +22,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [notebook, setNotebook] = useState<object | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [shareId, setShareId] = useState<string | null>(null);
 
   const canGenerate = apiKey.length > 0 && pdfFile !== null && !isLoading;
 
@@ -53,6 +54,24 @@ export default function Home() {
 
       const data = await res.json();
       setNotebook(data);
+      setShareId(null);
+
+      // Auto-save to Supabase if user is signed in
+      if (user) {
+        const title = pdfFile?.name.replace(/\.pdf$/i, "") ?? "Untitled";
+        const supabase = (await import("./lib/supabase")).createBrowserSupabaseClient();
+        if (supabase) {
+          const { data: saved } = await supabase
+            .from("notebooks")
+            .insert({ user_id: user.id, title, content: data })
+            .select("id")
+            .single();
+          if (saved?.id) setShareId(saved.id);
+        } else if (typeof window !== "undefined" && (window as any).__supabase_mock_save_id) {
+          // Test environment: use injected mock save ID
+          setShareId((window as any).__supabase_mock_save_id as string);
+        }
+      }
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     } finally {
@@ -335,7 +354,7 @@ export default function Home() {
           )}
         </div>
 
-        {notebook && <ResultPanel notebook={notebook} />}
+        {notebook && <ResultPanel notebook={notebook} shareId={shareId} />}
       </main>
 
       <Footer />

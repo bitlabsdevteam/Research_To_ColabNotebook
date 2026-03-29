@@ -4,6 +4,7 @@ import { downloadNotebook, openInColab } from "../lib/colab";
 
 interface ResultPanelProps {
   notebook: object;
+  shareId?: string | null;
 }
 
 function CheckCircleIcon() {
@@ -65,7 +66,7 @@ function ExternalLinkIcon() {
   );
 }
 
-export function ResultPanel({ notebook }: ResultPanelProps) {
+export function ResultPanel({ notebook, shareId }: ResultPanelProps) {
   return (
     <div
       data-testid="result-panel"
@@ -123,6 +124,39 @@ export function ResultPanel({ notebook }: ResultPanelProps) {
           Your Colab tutorial has been generated.
         </p>
       </div>
+
+      {/* Save indicator */}
+      {shareId && (
+        <div
+          data-testid="save-indicator"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "var(--space-2)",
+            padding: "var(--space-2) var(--space-3)",
+            backgroundColor: "var(--color-success-glow)",
+            border: "1px solid rgba(16,185,129,0.25)",
+            borderRadius: "var(--radius-md)",
+            fontSize: "var(--font-size-sm)",
+            color: "var(--color-success)",
+            marginBottom: "var(--space-4)",
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>
+            Saved to your account
+            {" · "}
+            <a
+              href={`/notebook/${shareId}`}
+              style={{ color: "var(--color-success)", textDecoration: "underline" }}
+            >
+              Share link
+            </a>
+          </span>
+        </div>
+      )}
 
       {/* Action buttons */}
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
