@@ -29,6 +29,12 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const supabase = createBrowserSupabaseClient();
 
+    // No Supabase credentials configured — skip auth, render children as-is
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
+
     // Hydrate session on mount
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);

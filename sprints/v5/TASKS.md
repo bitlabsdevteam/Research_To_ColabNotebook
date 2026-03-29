@@ -7,9 +7,10 @@
   - Files: `apps/web/app/lib/supabase.ts`, `apps/web/app/context/SupabaseProvider.tsx`, `apps/web/app/layout.tsx`
   - Completed: 2026-03-29 — `createBrowserSupabaseClient()` + `getSupabaseConfig()` in lib/supabase.ts; SupabaseProvider with onAuthStateChange listener wraps app in layout.tsx; useSupabaseSession() hook exposes { session, user, isLoading }; 3 vitest unit tests green; 149/149 total; Supabase package audit clean (3 pre-existing NestJS vulns unrelated)
 
-- [ ] Task 2: Light theme CSS tokens and theme switching (P0)
+- [x] Task 2: Light theme CSS tokens and theme switching (P0)
   - Acceptance: `globals.css` defines a `[data-theme="light"]` block with warm cream tokens (`--color-bg-base: #eeebe4`, near-black text, toned-down accent) matching the Anthropic editorial aesthetic; `ThemeProvider` component on `<html>` reads `localStorage.getItem("theme")` on mount (defaulting to `"dark"`) and sets `document.documentElement.dataset.theme`; no flash of wrong theme on load (use `suppressHydrationWarning` on `<html>`); Playwright test verifies `[data-theme="light"]` on `<html>` after toggle click
   - Files: `apps/web/app/globals.css`, `apps/web/app/context/ThemeProvider.tsx`, `apps/web/app/layout.tsx`
+  - Completed: 2026-03-29 — [data-theme="light"] cream token block in globals.css; ThemeProvider reads localStorage + sets document.documentElement.dataset.theme in useEffect; layout.tsx has inline script for pre-paint FOUC prevention + data-theme="dark" default; createBrowserSupabaseClient() null-guarded against missing env vars; 4 E2E tests green; 149/149 vitest + 82/83 Playwright all passing
 
 - [ ] Task 3: Theme toggle button in Header (P0)
   - Acceptance: Header renders a sun/moon SVG toggle button (`data-testid="theme-toggle"`) between the brand title and the sign-in area; clicking it switches `data-theme` between `"dark"` and `"light"` and persists to `localStorage`; button shows sun icon in dark mode, moon icon in light mode; Playwright test clicks toggle, verifies theme attribute flips, clicks again, verifies it flips back

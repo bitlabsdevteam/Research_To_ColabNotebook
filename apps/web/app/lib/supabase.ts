@@ -1,4 +1,4 @@
-import { createBrowserClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
 export interface SupabaseConfig {
   url: string;
@@ -13,5 +13,6 @@ export function getSupabaseConfig(): SupabaseConfig {
 
 export function createBrowserSupabaseClient() {
   const { url, anonKey } = getSupabaseConfig();
-  return createBrowserClient(url, anonKey);
+  if (!url || !anonKey) return null;
+  return createClient(url, anonKey);
 }

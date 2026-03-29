@@ -120,9 +120,50 @@
   50%      { opacity: 0.9; }
 }
 
+/* ─── Light Theme Tokens (Anthropic editorial aesthetic) ─────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Backgrounds — warm cream palette */
+  --color-bg-base:     #eeebe4;
+  --color-bg-surface:  #e8e4dc;
+  --color-bg-elevated: #dedad2;
+
+  /* Borders */
+  --color-border:       rgba(0, 0, 0, 0.10);
+  --color-border-focus: rgba(0, 0, 0, 0.50);
+
+  /* Typography — near-black, high contrast */
+  --color-text-primary:   #0d0d0d;
+  --color-text-secondary: #4a4a4a;
+  --color-text-muted:     #8a8a8a;
+
+  /* Accent — dark ink instead of indigo */
+  --color-accent:       #1a1a1a;
+  --color-accent-light: #3a3a3a;
+  --color-accent-glow:  rgba(0, 0, 0, 0.06);
+
+  /* Status — darkened for light bg legibility */
+  --color-success:      #15803d;
+  --color-success-glow: rgba(21, 128, 61, 0.12);
+  --color-error:        #b91c1c;
+  --color-error-glow:   rgba(185, 28, 28, 0.10);
+  --color-colab:        #c27d00;
+
+  /* Shadows — subtle on light surfaces */
+  --shadow-card:   0 0 0 1px var(--color-border), 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-accent: 0 0 0 2px rgba(0, 0, 0, 0.20);
+  --shadow-lift:   0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
 /* ─── Base Styles ────────────────────────────────────────────────────── */
 html {
   color-scheme: dark;
+}
+
+[data-theme="light"] body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
 }
 
 body {

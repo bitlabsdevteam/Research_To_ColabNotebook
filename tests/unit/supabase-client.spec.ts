@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the supabase-js module so no real network calls are made
 vi.mock("@supabase/supabase-js", () => ({
-  createBrowserClient: vi.fn(() => ({
+  createClient: vi.fn(() => ({
     auth: {
       getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
       onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),

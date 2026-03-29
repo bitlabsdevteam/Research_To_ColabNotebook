@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ApiKeyProvider } from "./context/ApiKeyContext";
 import { SupabaseProvider } from "./context/SupabaseProvider";
+import { ThemeProvider } from "./context/ThemeProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,14 +22,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} data-theme="dark" suppressHydrationWarning>
       <body
         className={`${inter.className} min-h-screen antialiased`}
         style={{ backgroundColor: "var(--color-bg-base)", color: "var(--color-text-primary)" }}
+        suppressHydrationWarning
       >
-        <SupabaseProvider>
-          <ApiKeyProvider>{children}</ApiKeyProvider>
-        </SupabaseProvider>
+        {/* Inline script: sets data-theme before first paint, preventing flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');document.documentElement.dataset.theme=t==='light'?'light':'dark';}catch(e){}})();`,
+          }}
+        />
+        <ThemeProvider>
+          <SupabaseProvider>
+            <ApiKeyProvider>{children}</ApiKeyProvider>
+          </SupabaseProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
