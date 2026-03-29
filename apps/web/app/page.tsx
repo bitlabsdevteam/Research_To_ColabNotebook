@@ -5,6 +5,8 @@ import { ApiKeyInput } from "./components/ApiKeyInput";
 import { PdfUpload } from "./components/PdfUpload";
 import { GenerateButton } from "./components/GenerateButton";
 import { ResultPanel } from "./components/ResultPanel";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
 import { useApiKey } from "./context/ApiKeyContext";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -81,6 +83,8 @@ export default function Home() {
         }}
       />
 
+      <Header />
+
       <main
         style={{
           position: "relative",
@@ -89,7 +93,7 @@ export default function Home() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
+          minHeight: "calc(100vh - 56px - 73px)",
           padding: "var(--space-8)",
           gap: "var(--space-8)",
         }}
@@ -215,6 +219,8 @@ export default function Home() {
 
         {notebook && <ResultPanel notebook={notebook} />}
       </main>
+
+      <Footer />
     </div>
   );
 }

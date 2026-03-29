@@ -12,9 +12,10 @@
   - Files: `apps/web/app/page.tsx`
   - Completed: 2026-03-28 — Full-screen dark scaffold with dot-grid class, radial spotlight div, hero heading/subheading with animate-fade-up, form card with animate-fade-up-delay; all existing data-testid selectors preserved; 6 Playwright tests green
 
-- [ ] Task 3: Branded header and footer components (P0)
+- [x] Task 3: Branded header and footer components (P0)
   - Acceptance: A new `<Header>` component renders a sticky top bar with the Paper2Notebook logo mark (SVG) and title on the left, and a GitHub icon link on the right, styled with `var(--color-bg-surface)` and a bottom border; a `<Footer>` renders a centered muted line at the bottom; both are wired into `page.tsx`
   - Files: `apps/web/app/components/Header.tsx`, `apps/web/app/components/Footer.tsx`, `apps/web/app/page.tsx`
+  - Completed: 2026-03-28 — Header: sticky, 56px, logo mark SVG + brand title + GitHub icon link with hover states; Footer: border-top, "Built with Paper2Notebook · v4"; all existing tests pass; 7 Playwright tests green
 
 - [ ] Task 4: Redesign ApiKeyInput — polished dark input with lock icon and eye toggle (P0)
   - Acceptance: Input sits inside a glass card section; a lock SVG icon is shown on the left of the field; an eye/eye-off SVG toggle on the right switches `type` between `password` and `text`; focus state shows `var(--color-border-focus)` ring; filled state shows a green checkmark badge instead of plain "Key set" text; all `data-testid` attributes preserved
