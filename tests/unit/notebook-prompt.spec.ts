@@ -26,6 +26,25 @@ describe("SYSTEM_PROMPT", () => {
     expect(SYSTEM_PROMPT).toContain("markdown");
     expect(SYSTEM_PROMPT).toContain("code");
   });
+
+  it("instructs pip install as the FIRST code cell", () => {
+    expect(SYSTEM_PROMPT).toMatch(/pip install.{0,80}first/si);
+  });
+
+  it("instructs to limit imports to standard library, numpy, and matplotlib", () => {
+    expect(SYSTEM_PROMPT).toContain("numpy");
+    expect(SYSTEM_PROMPT).toContain("matplotlib");
+    expect(SYSTEM_PROMPT).toMatch(/standard library/i);
+  });
+
+  it("instructs to place markdown explanation cells BEFORE each code section", () => {
+    expect(SYSTEM_PROMPT).toMatch(/markdown.{0,80}before/si);
+  });
+
+  it("instructs that all code cells must be self-contained and executable in sequence", () => {
+    expect(SYSTEM_PROMPT).toMatch(/self.contained/i);
+    expect(SYSTEM_PROMPT).toMatch(/executable in sequence/i);
+  });
 });
 
 describe("buildUserPrompt", () => {
