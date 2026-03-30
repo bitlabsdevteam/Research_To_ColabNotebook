@@ -2,9 +2,10 @@
 
 ## Backlog
 
-- [ ] Task 1: Audit and end-to-end test the core /generate engine (P0)
+- [x] Task 1: Audit and end-to-end test the core /generate engine (P0)
   - Acceptance: Run a real end-to-end test by sending a sample PDF to the NestJS `/generate` endpoint and verify: (a) it returns valid JSON with `nbformat: 4` and a `cells` array; (b) each cell has `cell_type`, `source`, `metadata`, and `outputs` fields; (c) at least one cell has `cell_type: "code"` and at least one has `cell_type: "markdown"`; write a vitest integration test `tests/integration/generate-engine.test.ts` that validates the notebook structure; document any failures found in a comment block at the top of the test file
   - Files: `tests/integration/generate-engine.test.ts`, `apps/api/src/generate/generate.service.ts` (read-only audit)
+  - Completed: 2026-03-30 — 13 integration tests green covering nbformat, cells array, cell types, source arrays, code cell outputs, markdown/code presence, and input validation (400s); 5 issues documented in test file header: ISSUE-1 (gpt-5.4 model doesn't exist), ISSUE-2 (no OpenAI timeout), ISSUE-3 (no notebook-level validation), ISSUE-4 (generic 500 loses error detail), ISSUE-5 (no retry on malformed response); 162/162 vitest passing; 12 pre-existing NestJS CLI vulns unrelated to this task
 
 - [ ] Task 2: Add notebook structure validator to NestJS (P0)
   - Acceptance: New utility `apps/api/src/generate/notebook-validator.ts` exports `validateNotebook(json: unknown): { valid: boolean; errors: string[] }`; it checks: (a) `nbformat` is 4, (b) `cells` is a non-empty array, (c) every cell has `cell_type` of `"code"` or `"markdown"`, (d) every cell has a `source` field (string or string array), (e) every code cell has an `outputs` array; `generateService` calls `validateNotebook` after parsing OpenAI response and throws a descriptive error if invalid; vitest unit tests cover valid and invalid cases (missing cells, wrong nbformat, missing source)
