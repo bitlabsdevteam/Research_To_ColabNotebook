@@ -33,7 +33,15 @@ const fakeCells = [
   { cell_type: "code", source: "import numpy as np" },
 ];
 
-const fakeNotebook = { nbformat: 4, cells: fakeCells };
+const fakeNotebook = {
+  nbformat: 4,
+  nbformat_minor: 5,
+  metadata: { kernelspec: { language: "python" } },
+  cells: [
+    { cell_type: "markdown", source: ["# Tutorial"], metadata: {} },
+    { cell_type: "code", source: ["import numpy as np"], metadata: {}, execution_count: null, outputs: [] },
+  ],
+};
 
 beforeEach(async () => {
   vi.clearAllMocks();

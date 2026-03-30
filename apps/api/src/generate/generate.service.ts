@@ -3,6 +3,7 @@ import { PdfParserService } from "../pdf-parser/pdf-parser.service";
 import { FigureExtractorService } from "../pdf-parser/figure-extractor.service";
 import { AiService } from "../ai/ai.service";
 import { NotebookBuilderService } from "../notebook/notebook-builder.service";
+import { validateNotebook } from "./notebook-validator";
 
 @Injectable()
 export class GenerateService {
@@ -36,6 +37,17 @@ export class GenerateService {
 
     // 4. Build .ipynb notebook
     const notebook = this.notebookBuilder.build(cells, figures);
+
+    // 5. Validate notebook structure
+    const validation = validateNotebook(notebook);
+    if (!validation.valid) {
+      this.logger.error(
+        `Generated notebook failed validation: ${validation.errors.join("; ")}`
+      );
+      throw new Error(
+        `Generated notebook is structurally invalid: ${validation.errors.join("; ")}`
+      );
+    }
 
     return notebook;
   }
