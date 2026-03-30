@@ -1,0 +1,43 @@
+# Sprint v6 — Tasks
+
+## Backlog
+
+- [ ] Task 1: Audit and end-to-end test the core /generate engine (P0)
+  - Acceptance: Run a real end-to-end test by sending a sample PDF to the NestJS `/generate` endpoint and verify: (a) it returns valid JSON with `nbformat: 4` and a `cells` array; (b) each cell has `cell_type`, `source`, `metadata`, and `outputs` fields; (c) at least one cell has `cell_type: "code"` and at least one has `cell_type: "markdown"`; write a vitest integration test `tests/integration/generate-engine.test.ts` that validates the notebook structure; document any failures found in a comment block at the top of the test file
+  - Files: `tests/integration/generate-engine.test.ts`, `apps/api/src/generate/generate.service.ts` (read-only audit)
+
+- [ ] Task 2: Add notebook structure validator to NestJS (P0)
+  - Acceptance: New utility `apps/api/src/generate/notebook-validator.ts` exports `validateNotebook(json: unknown): { valid: boolean; errors: string[] }`; it checks: (a) `nbformat` is 4, (b) `cells` is a non-empty array, (c) every cell has `cell_type` of `"code"` or `"markdown"`, (d) every cell has a `source` field (string or string array), (e) every code cell has an `outputs` array; `generateService` calls `validateNotebook` after parsing OpenAI response and throws a descriptive error if invalid; vitest unit tests cover valid and invalid cases (missing cells, wrong nbformat, missing source)
+  - Files: `apps/api/src/generate/notebook-validator.ts`, `apps/api/src/generate/generate.service.ts`, `tests/unit/notebook-validator.test.ts`
+
+- [ ] Task 3: Harden the /generate endpoint — timeout, retry, error messages (P0)
+  - Acceptance: The OpenAI call in `generateService` has a 60-second timeout (use `AbortController`); if OpenAI returns a response that fails `validateNotebook`, the service retries once with the same prompt + appended instruction `"Ensure your response is valid JSON matching nbformat 4 exactly"`; if both attempts fail, throw `GenerationError` with message `"Failed to generate a valid notebook after 2 attempts"`; the controller returns HTTP 422 with `{ error: "..." }` on `GenerationError`; existing integration test verifies the 422 response shape; add a vitest test that mocks a bad first response followed by a valid second response to verify the retry logic
+  - Files: `apps/api/src/generate/generate.service.ts`, `apps/api/src/generate/generate.controller.ts`, `tests/unit/generate-retry.test.ts`
+
+- [ ] Task 4: Improve the default OpenAI prompt for better notebook quality (P0)
+  - Acceptance: Update the system prompt in `apps/api/src/generate/` so it explicitly instructs OpenAI to: (a) include a `pip install` cell as the first code cell, (b) use only standard library imports plus `numpy`, `matplotlib`, and the model's own dependencies, (c) include markdown explanation cells before each major code section, (d) ensure all code cells are self-contained and executable in sequence; run the existing E2E Playwright generate flow test (`tests/e2e/full-flow.spec.ts`) and verify it still passes; take a screenshot `tests/screenshots/task4v6-01-generated-notebook.png`
+  - Files: `apps/api/src/generate/prompts/default.prompt.ts` (or equivalent prompt file), `tests/e2e/full-flow.spec.ts`
+
+- [ ] Task 5: Add ModeSelector dropdown component to the frontend form (P0)
+  - Acceptance: New component `apps/web/app/components/ModeSelector.tsx` renders a `<select data-testid="mode-selector">` with two options: `<option value="none">None — general notebook</option>` and `<option value="fairsteer">FairSteer — bias detection</option>`; default value is `"none"`; renders below the step divider after "Upload PDF" and before "Generate"; when `value="fairsteer"` is selected, a blue info banner (`data-testid="fairsteer-banner"`) appears below the dropdown with text: "FairSteer mode: generates a notebook implementing BAD, DSV, and DAS bias detection for the model in your PDF"; `page.tsx` passes `mode` state down to `GenerateButton` area and includes `mode` in the POST body to `/generate`; Playwright test verifies dropdown renders, option changes, banner appears/disappears; screenshot `tests/screenshots/task5v6-01-mode-selector.png`
+  - Files: `apps/web/app/components/ModeSelector.tsx`, `apps/web/app/page.tsx`, `tests/e2e/mode-selector.spec.ts`
+
+- [ ] Task 6: Create the FairSteer prompt template in NestJS (P0)
+  - Acceptance: New file `apps/api/src/generate/prompts/fairsteer.prompt.ts` exports `buildFairSteerPrompt(paperText: string): { system: string; user: string }`; the system prompt instructs OpenAI to act as an expert in LLM bias detection using FairSteer (ACL 2025), explaining BAD/DSV/DAS; the user prompt includes the extracted PDF text and instructs generation of a notebook with exactly 6 sections matching the PRD structure (Introduction, Setup, Load Model, BAD, DSV+DAS, Visualization); `generateService` reads the `mode` field from the request and routes to `buildFairSteerPrompt` when `mode === "fairsteer"`; vitest unit test verifies the prompt contains key FairSteer terminology: `"Biased Activation Detection"`, `"Debiasing Steering Vector"`, `"Dynamic Activation Steering"`, `"logistic regression"`, `"contrastive prompt pairs"`
+  - Files: `apps/api/src/generate/prompts/fairsteer.prompt.ts`, `apps/api/src/generate/generate.service.ts`, `tests/unit/fairsteer-prompt.test.ts`
+
+- [ ] Task 7: Update /generate endpoint to accept and route the mode field (P0)
+  - Acceptance: `GenerateDto` (or equivalent request body type) adds an optional `mode: "none" | "fairsteer"` field defaulting to `"none"`; `generateService.generate(pdf, apiKey, mode)` routes to `buildFairSteerPrompt` or the default prompt based on mode; the frontend `page.tsx` `handleGenerate()` function includes `mode` in the FormData or request body; Playwright E2E test in `tests/e2e/fairsteer-flow.spec.ts` mocks the `/generate` endpoint returning a valid FairSteer notebook (with `cell_type: "code"` cells containing `"logistic regression"` and `"DSV"`) and verifies `result-panel` renders; screenshot `tests/screenshots/task7v6-01-fairsteer-result.png`
+  - Files: `apps/api/src/generate/generate.dto.ts` (or service/controller), `apps/api/src/generate/generate.service.ts`, `apps/web/app/page.tsx`, `tests/e2e/fairsteer-flow.spec.ts`
+
+- [ ] Task 8: FairSteer notebook — BAD section code quality (P1)
+  - Acceptance: Enhance the FairSteer prompt template (Task 6) to include a detailed few-shot example of the BAD section code cells in the system prompt; the example must show: (a) loading BBQ dataset from HuggingFace (`datasets.load_dataset("heegyu/bbq")`), (b) running model forward pass with `output_hidden_states=True` to extract layer activations, (c) training `sklearn.linear_model.LogisticRegression` on flattened activations, (d) plotting per-layer validation accuracy with `matplotlib`; vitest test verifies the prompt contains `"output_hidden_states"`, `"LogisticRegression"`, `"heegyu/bbq"`; run security scan (semgrep + npm audit) and confirm clean
+  - Files: `apps/api/src/generate/prompts/fairsteer.prompt.ts`, `tests/unit/fairsteer-prompt.test.ts`
+
+- [ ] Task 9: FairSteer notebook — DSV and DAS section code quality (P1)
+  - Acceptance: Enhance the FairSteer prompt template to include few-shot examples for DSV and DAS sections; DSV example must show: (a) constructing contrastive prompt pairs, (b) computing `v_l = mean(activations_biased - activations_unbiased)` using numpy, (c) PCA scatter plot with `sklearn.decomposition.PCA(n_components=2)` showing biased (red) vs unbiased (green) clusters with a DSV arrow; DAS example must show: (a) a PyTorch forward hook that checks classifier probability at layer `l*`, (b) conditional addition of DSV to activation when `prob < 0.5`, (c) comparison of model output before/after DAS on a sample BBQ question; vitest test verifies prompt contains `"PCA"`, `"forward_hook"`, `"register_forward_hook"`, `"contrastive"`
+  - Files: `apps/api/src/generate/prompts/fairsteer.prompt.ts`, `tests/unit/fairsteer-prompt.test.ts`
+
+- [ ] Task 10: Sprint v6 smoke test and full suite verification (P1)
+  - Acceptance: New `tests/e2e/sprint-v6-smoke.spec.ts` covers: (a) mode selector renders with "None" default, (b) switching to FairSteer shows info banner, (c) FairSteer mode sends correct `mode` field in request (intercept network), (d) mocked FairSteer notebook renders in ResultPanel with save-indicator; all existing Playwright tests (122+) and vitest tests (149+) still pass; semgrep clean, 0 npm audit vulnerabilities; screenshots `tests/screenshots/task10v6-01` through `task10v6-04`
+  - Files: `tests/e2e/sprint-v6-smoke.spec.ts`, `tests/screenshots/`
