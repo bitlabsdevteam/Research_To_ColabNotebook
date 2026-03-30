@@ -8,6 +8,8 @@ export interface NotebookCell {
   source: string;
 }
 
+const OPENAI_TIMEOUT_MS = 60_000;
+
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
@@ -15,25 +17,47 @@ export class AiService {
   async generateNotebook(
     sections: PaperSection[],
     figures: { page: number; base64: string; caption?: string }[],
-    apiKey: string
+    apiKey: string,
+    retryInstruction?: string
   ): Promise<NotebookCell[]> {
     const client = new OpenAI({ apiKey });
 
-    const userPrompt = buildUserPrompt(sections, figures);
+    let userPrompt = buildUserPrompt(sections, figures);
+    if (retryInstruction) {
+      userPrompt += `\n\n${retryInstruction}`;
+    }
+
+    // 60-second AbortController timeout on the OpenAI call
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(new Error("OpenAI request timed out after 60s")),
+      OPENAI_TIMEOUT_MS
+    );
 
     let response;
     try {
-      response = await client.chat.completions.create({
-        model: "gpt-5.4",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: userPrompt },
-        ],
-        temperature: 0.3,
-      });
+      response = await client.chat.completions.create(
+        {
+          model: "gpt-4o",
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: userPrompt },
+          ],
+          temperature: 0.3,
+        },
+        { signal: controller.signal }
+      );
     } catch (error: any) {
+      const isTimeout =
+        error?.name === "AbortError" ||
+        (error?.message ?? "").includes("timed out");
+      const msg = isTimeout
+        ? "Notebook generation timed out. Please try again."
+        : "Notebook generation failed. Please try again.";
       this.logger.error(`OpenAI API error: ${error.message || "Unknown error"}`);
-      throw new Error("Notebook generation failed. Please try again.");
+      throw new Error(msg);
+    } finally {
+      clearTimeout(timeoutId);
     }
 
     const content = response.choices[0]?.message?.content;

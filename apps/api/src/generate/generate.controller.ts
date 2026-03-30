@@ -6,11 +6,13 @@ import {
   UploadedFile,
   Headers,
   BadRequestException,
+  HttpException,
   InternalServerErrorException,
   Logger,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { GenerateService } from "./generate.service";
+import { GenerationError } from "./generation-error";
 
 const MAX_SIZE_BYTES = 20 * 1024 * 1024; // 20 MB
 
@@ -65,6 +67,9 @@ export class GenerateController {
       return notebook;
     } catch (error: any) {
       this.logger.error(`Generation failed: ${error.message}`, error.stack);
+      if (error instanceof GenerationError) {
+        throw new HttpException({ error: error.message }, 422);
+      }
       throw new InternalServerErrorException(
         "Generation failed. Please try again."
       );

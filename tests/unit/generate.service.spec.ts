@@ -82,10 +82,12 @@ describe("GenerateService", () => {
     await service.generate(buf, "sk-key-123");
 
     expect(mockGenerateNotebook).toHaveBeenCalledTimes(1);
+    // 4th arg is retryInstruction (undefined on first attempt)
     expect(mockGenerateNotebook).toHaveBeenCalledWith(
       fakeSections,
       fakeFigures,
-      "sk-key-123"
+      "sk-key-123",
+      undefined
     );
   });
 
@@ -114,7 +116,8 @@ describe("GenerateService", () => {
     expect(mockGenerateNotebook).toHaveBeenCalledWith(
       fakeSections,
       [],
-      "sk-test"
+      "sk-test",
+      undefined
     );
     expect(mockBuild).toHaveBeenCalledWith(fakeCells, []);
     expect(result).toEqual(fakeNotebook);
@@ -129,14 +132,15 @@ describe("GenerateService", () => {
     );
   });
 
-  it("propagates error when aiService.generateNotebook throws", async () => {
+  it("throws GenerationError after all retry attempts fail", async () => {
     mockGenerateNotebook.mockRejectedValue(
       new Error("Notebook generation failed. Please try again.")
     );
 
     const buf = Buffer.from("fake-pdf");
+    // After 2 failed attempts, throws GenerationError (not the original error)
     await expect(service.generate(buf, "sk-test")).rejects.toThrow(
-      /generation failed/i
+      /Failed to generate a valid notebook after 2 attempts/
     );
   });
 });

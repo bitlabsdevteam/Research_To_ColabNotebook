@@ -133,10 +133,11 @@ describe("POST /generate — validation", () => {
     expect(body.cells.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("returns 500 with generic message when AI service fails", async () => {
-    mockGenerateNotebook.mockRejectedValueOnce(
-      new Error("OpenAI API rate limit for org-secret")
-    );
+  it("returns 422 with { error } when AI service fails on all retry attempts", async () => {
+    // Reject on BOTH attempts (retry logic tries twice)
+    mockGenerateNotebook
+      .mockRejectedValueOnce(new Error("OpenAI API rate limit for org-secret"))
+      .mockRejectedValueOnce(new Error("OpenAI API rate limit for org-secret"));
 
     const pdfBuffer = createMinimalPdf();
     const formData = new FormData();
@@ -152,12 +153,12 @@ describe("POST /generate — validation", () => {
       body: formData,
     });
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(422);
     const body = await res.json();
-    expect(body.message).toContain("Generation failed");
+    expect(body).toHaveProperty("error");
     // Must NOT leak internal error details
-    expect(body.message).not.toContain("OpenAI");
-    expect(body.message).not.toContain("org-secret");
+    expect(body.error).not.toContain("OpenAI");
+    expect(body.error).not.toContain("org-secret");
   });
 
   it("returns 400 when Bearer token is empty (just 'Bearer ')", async () => {

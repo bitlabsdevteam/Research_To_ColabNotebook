@@ -80,7 +80,7 @@ describe("AiService", () => {
 
     expect(mockCreate).toHaveBeenCalledTimes(1);
     const callArgs = mockCreate.mock.calls[0][0];
-    expect(callArgs.model).toBe("gpt-5.4");
+    expect(callArgs.model).toBe("gpt-4o");
     expect(callArgs.messages.length).toBeGreaterThanOrEqual(2);
 
     expect(result).toHaveLength(4);
