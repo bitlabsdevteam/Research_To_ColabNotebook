@@ -71,10 +71,12 @@ export default function Home() {
             .select("id")
             .single();
           if (saved?.id) setShareId(saved.id);
-        } else if (typeof window !== "undefined" && (window as any).__supabase_mock_save_id) {
-          // Test environment: use injected mock save ID
-          setShareId((window as any).__supabase_mock_save_id as string);
         }
+      }
+
+      // Test environment: use injected mock save ID (allows E2E tests to verify save-indicator)
+      if (typeof window !== "undefined" && (window as any).__supabase_mock_save_id) {
+        setShareId((window as any).__supabase_mock_save_id as string);
       }
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
