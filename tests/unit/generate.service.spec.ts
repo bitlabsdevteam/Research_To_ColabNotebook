@@ -82,11 +82,12 @@ describe("GenerateService", () => {
     await service.generate(buf, "sk-key-123");
 
     expect(mockGenerateNotebook).toHaveBeenCalledTimes(1);
-    // 4th arg is retryInstruction (undefined on first attempt)
+    // 4th arg is retryInstruction (undefined on first attempt), 5th is promptOverrides (undefined for mode=none)
     expect(mockGenerateNotebook).toHaveBeenCalledWith(
       fakeSections,
       fakeFigures,
       "sk-key-123",
+      undefined,
       undefined
     );
   });
@@ -117,6 +118,7 @@ describe("GenerateService", () => {
       fakeSections,
       [],
       "sk-test",
+      undefined,
       undefined
     );
     expect(mockBuild).toHaveBeenCalledWith(fakeCells, []);

@@ -18,11 +18,13 @@ export class AiService {
     sections: PaperSection[],
     figures: { page: number; base64: string; caption?: string }[],
     apiKey: string,
-    retryInstruction?: string
+    retryInstruction?: string,
+    promptOverrides?: { system: string; user: string }
   ): Promise<NotebookCell[]> {
     const client = new OpenAI({ apiKey });
 
-    let userPrompt = buildUserPrompt(sections, figures);
+    const systemPrompt = promptOverrides?.system ?? SYSTEM_PROMPT;
+    let userPrompt = promptOverrides?.user ?? buildUserPrompt(sections, figures);
     if (retryInstruction) {
       userPrompt += `\n\n${retryInstruction}`;
     }
@@ -40,7 +42,7 @@ export class AiService {
         {
           model: "gpt-4o",
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt },
           ],
           temperature: 0.3,

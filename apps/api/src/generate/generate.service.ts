@@ -5,6 +5,7 @@ import { AiService } from "../ai/ai.service";
 import { NotebookBuilderService } from "../notebook/notebook-builder.service";
 import { validateNotebook } from "./notebook-validator";
 import { GenerationError } from "./generation-error";
+import { buildFairSteerPrompt } from "./prompts/fairsteer.prompt";
 
 const MAX_ATTEMPTS = 2;
 const RETRY_INSTRUCTION =
@@ -23,7 +24,11 @@ export class GenerateService {
     private readonly notebookBuilder: NotebookBuilderService
   ) {}
 
-  async generate(pdfBuffer: Buffer, apiKey: string) {
+  async generate(
+    pdfBuffer: Buffer,
+    apiKey: string,
+    mode: "none" | "fairsteer" = "none"
+  ) {
     // 1. Parse PDF text into sections (not retried — PDF errors are unrecoverable)
     const parsed = await this.pdfParser.parse(pdfBuffer);
 
@@ -37,6 +42,12 @@ export class GenerateService {
       );
     }
 
+    // Determine prompt overrides based on mode
+    const promptOverrides =
+      mode === "fairsteer"
+        ? buildFairSteerPrompt(parsed.rawText ?? parsed.sections.map((s) => `${s.title}\n${s.content}`).join("\n\n"))
+        : undefined;
+
     // 3 & 4. Generate + build + validate with up to MAX_ATTEMPTS retries
     let lastError: Error | undefined;
 
@@ -48,7 +59,8 @@ export class GenerateService {
           parsed.sections,
           figures,
           apiKey,
-          retryInstruction
+          retryInstruction,
+          promptOverrides
         );
 
         const notebook = this.notebookBuilder.build(cells, figures);
