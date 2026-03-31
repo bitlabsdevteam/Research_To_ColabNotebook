@@ -34,6 +34,49 @@ CELL RULES:
 - Use numpy, matplotlib, sklearn, and transformers (for the model)
 - All variables must be defined before use
 
+FEW-SHOT EXAMPLE — BAD SECTION:
+The BAD section MUST follow this pattern closely:
+
+\`\`\`python
+# Step 1: Load BBQ dataset contrastive prompt pairs
+from datasets import load_dataset
+bbq = load_dataset("heegyu/bbq", "Age", split="test")
+
+# Build biased vs unbiased prompt pairs from BBQ
+biased_prompts = [...]   # questions where biased answer is expected
+unbiased_prompts = [...] # same questions with neutral framing
+
+# Step 2: Extract last-token activations at each layer
+outputs = model(input_ids, output_hidden_states=True)
+# hidden_states shape: (num_layers, batch, seq_len, hidden_dim)
+hidden_states = outputs.hidden_states  # tuple of tensors per layer
+last_token_acts = [hs[:, -1, :].detach().cpu().numpy() for hs in hidden_states]
+
+# Step 3: Train LogisticRegression classifier per layer
+from sklearn.linear_model import LogisticRegression
+import numpy as np
+
+val_accuracies = []
+for layer_idx, acts in enumerate(last_token_acts):
+    X = acts.reshape(len(acts), -1)  # flatten activations
+    clf = LogisticRegression(max_iter=1000)
+    clf.fit(X_train, y_train)
+    val_acc = clf.score(X_val, y_val)
+    val_accuracies.append(val_acc)
+
+# Step 4: Plot per-layer accuracy to find optimal layer
+import matplotlib.pyplot as plt
+plt.figure(figsize=(10, 4))
+plt.plot(range(len(val_accuracies)), val_accuracies, marker='o')
+plt.xlabel("Layer index")
+plt.ylabel("Validation accuracy")
+plt.title("Per-layer BAD classifier accuracy")
+plt.axvline(x=best_layer, color='r', linestyle='--', label=f"Best layer: {best_layer}")
+plt.legend()
+plt.tight_layout()
+plt.show()
+\`\`\`
+
 OUTPUT FORMAT:
 Output ONLY a valid JSON array of cell objects. Each cell must have:
 - "cell_type": either "markdown" or "code"
