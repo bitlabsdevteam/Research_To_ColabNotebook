@@ -11,6 +11,7 @@ import { useApiKey } from "./context/ApiKeyContext";
 import { useTheme } from "./context/ThemeProvider";
 import { useSupabaseSession } from "./context/SupabaseProvider";
 import { NotebooksPanel } from "./components/NotebooksPanel";
+import { ModeSelector, type Mode } from "./components/ModeSelector";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -24,6 +25,7 @@ export default function Home() {
   const [notebook, setNotebook] = useState<object | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [shareId, setShareId] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode>("none");
 
   const canGenerate = apiKey.length > 0 && pdfFile !== null && !isLoading;
 
@@ -37,6 +39,7 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append("pdf", pdfFile);
+      formData.append("mode", mode);
 
       const res = await fetch(`${API_URL}/generate`, {
         method: "POST",
@@ -276,13 +279,29 @@ export default function Home() {
             className="step-divider"
           />
 
-          {/* Step 3 */}
+          {/* Step 3 — Mode */}
+          <div>
+            <p
+              data-testid="step-label-mode"
+              className="step-label"
+            >
+              3 · Mode
+            </p>
+            <ModeSelector value={mode} onChange={setMode} />
+          </div>
+
+          <hr
+            data-testid="step-divider"
+            className="step-divider"
+          />
+
+          {/* Step 4 */}
           <div>
             <p
               data-testid="step-label-3"
               className="step-label"
             >
-              3 · Generate
+              4 · Generate
             </p>
             <GenerateButton disabled={!canGenerate} onClick={handleGenerate} />
           </div>
