@@ -39,7 +39,25 @@ describe("GenerateController", () => {
   it("extracts apiKey from Bearer token correctly", async () => {
     await controller.generate(fakeFile, "Bearer sk-my-key-123");
 
-    expect(mockGenerate).toHaveBeenCalledWith(fakeFile.buffer, "sk-my-key-123");
+    expect(mockGenerate).toHaveBeenCalledWith(fakeFile.buffer, "sk-my-key-123", "none");
+  });
+
+  it("passes mode='fairsteer' to generateService when mode body field is 'fairsteer'", async () => {
+    await controller.generate(fakeFile, "Bearer sk-test", "fairsteer");
+
+    expect(mockGenerate).toHaveBeenCalledWith(fakeFile.buffer, "sk-test", "fairsteer");
+  });
+
+  it("defaults mode to 'none' when mode body field is absent", async () => {
+    await controller.generate(fakeFile, "Bearer sk-test", undefined);
+
+    expect(mockGenerate).toHaveBeenCalledWith(fakeFile.buffer, "sk-test", "none");
+  });
+
+  it("defaults mode to 'none' when mode body field is an unknown value", async () => {
+    await controller.generate(fakeFile, "Bearer sk-test", "invalid-mode");
+
+    expect(mockGenerate).toHaveBeenCalledWith(fakeFile.buffer, "sk-test", "none");
   });
 
   it("throws BadRequestException when file is missing", async () => {

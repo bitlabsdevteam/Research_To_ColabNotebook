@@ -5,6 +5,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Headers,
+  Body,
   BadRequestException,
   HttpException,
   InternalServerErrorException,
@@ -43,8 +44,11 @@ export class GenerateController {
   )
   async generate(
     @UploadedFile() file: Express.Multer.File | undefined,
-    @Headers("authorization") authHeader: string | undefined
+    @Headers("authorization") authHeader: string | undefined,
+    @Body("mode") rawMode?: string
   ) {
+    const mode: "none" | "fairsteer" =
+      rawMode === "fairsteer" ? "fairsteer" : "none";
     if (!file) {
       throw new BadRequestException("A PDF file is required.");
     }
@@ -63,7 +67,7 @@ export class GenerateController {
     }
 
     try {
-      const notebook = await this.generateService.generate(file.buffer, apiKey);
+      const notebook = await this.generateService.generate(file.buffer, apiKey, mode);
       return notebook;
     } catch (error: any) {
       this.logger.error(`Generation failed: ${error.message}`, error.stack);
