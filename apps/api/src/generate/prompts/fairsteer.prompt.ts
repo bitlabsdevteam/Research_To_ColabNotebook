@@ -77,6 +77,71 @@ plt.tight_layout()
 plt.show()
 \`\`\`
 
+FEW-SHOT EXAMPLE — DSV SECTION:
+The DSV section MUST follow this pattern closely:
+
+\`\`\`python
+import numpy as np
+from sklearn.decomposition import PCA
+
+# Step 1: Construct contrastive prompt pairs (biased P+ vs unbiased P-)
+# Each pair probes the same social scenario from biased and unbiased angle
+contrastive_pairs = [
+    ("The old nurse made a mistake.", "The nurse made a mistake."),
+    ("The female engineer failed.", "The engineer failed."),
+]
+
+# Step 2: Extract activations for biased and unbiased prompts at best_layer
+activations_biased = extract_activations(biased_prompts, layer=best_layer)
+activations_unbiased = extract_activations(unbiased_prompts, layer=best_layer)
+
+# Step 3: Compute DSV as mean difference (v_l = mean(activations_biased - activations_unbiased))
+dsv = np.mean(activations_biased - activations_unbiased, axis=0)
+
+# Step 4: PCA scatter — biased (red) vs unbiased (green) + DSV arrow
+pca = PCA(n_components=2)
+all_acts = np.vstack([activations_biased, activations_unbiased])
+projected = pca.fit_transform(all_acts)
+n = len(activations_biased)
+
+plt.figure(figsize=(8, 6))
+plt.scatter(projected[:n, 0], projected[:n, 1], c='red', label='Biased', alpha=0.6)
+plt.scatter(projected[n:, 0], projected[n:, 1], c='green', label='Unbiased', alpha=0.6)
+dsv_2d = pca.transform(dsv.reshape(1, -1))[0]
+plt.annotate("", xy=dsv_2d, xytext=(0, 0),
+             arrowprops=dict(arrowstyle="->", color="blue", lw=2))
+plt.legend()
+plt.title("PCA of biased vs unbiased activations (DSV arrow)")
+plt.tight_layout()
+plt.show()
+\`\`\`
+
+FEW-SHOT EXAMPLE — DAS SECTION:
+The DAS section MUST follow this pattern closely:
+
+\`\`\`python
+import torch
+
+# Step 1: Define forward_hook — checks bias probability and conditionally applies DSV
+def forward_hook(module, input, output):
+    hidden = output[0] if isinstance(output, tuple) else output
+    last_token = hidden[:, -1, :]
+    prob = clf.predict_proba(last_token.detach().cpu().numpy())[:, 1]
+    # Add DSV when bias is detected (prob < 0.5 means biased direction)
+    for i in range(len(prob)):
+        if prob[i] < 0.5:
+            hidden[i, -1, :] += torch.tensor(dsv, dtype=hidden.dtype, device=hidden.device)
+    return (hidden,) + output[1:] if isinstance(output, tuple) else hidden
+
+# Step 2: Register the hook on the best layer
+hook_handle = model.model.layers[best_layer].register_forward_hook(forward_hook)
+
+# Step 3: Compare before DAS vs after DAS on a sample BBQ question
+sample_question = "The old nurse made a mistake — who should be responsible?"
+print("Before DAS:", generate_response(model, tokenizer, sample_question))
+hook_handle.remove()
+\`\`\`
+
 OUTPUT FORMAT:
 Output ONLY a valid JSON array of cell objects. Each cell must have:
 - "cell_type": either "markdown" or "code"

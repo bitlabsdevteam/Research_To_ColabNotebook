@@ -100,4 +100,56 @@ describe("buildFairSteerPrompt", () => {
       expect(system).toMatch(/per.layer.*(accuracy|val_acc)/i);
     });
   });
+
+  // Task 9: DSV and DAS section few-shot code quality
+  describe("DSV section few-shot examples", () => {
+    it("system prompt contains 'contrastive' (contrastive prompt pairs)", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      expect(system).toContain("contrastive");
+    });
+
+    it("system prompt shows DSV mean-difference computation with numpy", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      // v_l = mean(activations_biased - activations_unbiased)
+      expect(system).toMatch(/np\.mean.*activations/i);
+    });
+
+    it("system prompt contains 'PCA' (PCA scatter plot)", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      expect(system).toContain("PCA");
+    });
+
+    it("system prompt contains sklearn PCA with n_components=2", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      expect(system).toContain("n_components=2");
+    });
+
+    it("system prompt shows biased (red) vs unbiased (green) PCA scatter", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      expect(system).toContain("red");
+      expect(system).toContain("green");
+    });
+  });
+
+  describe("DAS section few-shot examples", () => {
+    it("system prompt contains 'register_forward_hook'", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      expect(system).toContain("register_forward_hook");
+    });
+
+    it("system prompt contains a forward_hook function definition", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      expect(system).toContain("forward_hook");
+    });
+
+    it("system prompt shows conditional DSV addition when prob < 0.5", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      expect(system).toMatch(/prob.*<.*0\.5|0\.5.*>.*prob/);
+    });
+
+    it("system prompt shows comparison before/after DAS", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText);
+      expect(system).toMatch(/before.*DAS|after.*DAS|before.*after/i);
+    });
+  });
 });

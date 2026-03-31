@@ -42,9 +42,10 @@
   - Files: `apps/api/src/generate/prompts/fairsteer.prompt.ts`, `tests/unit/fairsteer-prompt.spec.ts`
   - Completed: 2026-03-31 — Added BAD few-shot code example to system prompt covering: load_dataset("heegyu/bbq"), output_hidden_states=True activation extraction, LogisticRegression per-layer training, per-layer accuracy matplotlib plot with best-layer marker; 5 new unit tests (16 total in spec); 218/218 vitest green; semgrep clean
 
-- [ ] Task 9: FairSteer notebook — DSV and DAS section code quality (P1)
+- [x] Task 9: FairSteer notebook — DSV and DAS section code quality (P1)
   - Acceptance: Enhance the FairSteer prompt template to include few-shot examples for DSV and DAS sections; DSV example must show: (a) constructing contrastive prompt pairs, (b) computing `v_l = mean(activations_biased - activations_unbiased)` using numpy, (c) PCA scatter plot with `sklearn.decomposition.PCA(n_components=2)` showing biased (red) vs unbiased (green) clusters with a DSV arrow; DAS example must show: (a) a PyTorch forward hook that checks classifier probability at layer `l*`, (b) conditional addition of DSV to activation when `prob < 0.5`, (c) comparison of model output before/after DAS on a sample BBQ question; vitest test verifies prompt contains `"PCA"`, `"forward_hook"`, `"register_forward_hook"`, `"contrastive"`
-  - Files: `apps/api/src/generate/prompts/fairsteer.prompt.ts`, `tests/unit/fairsteer-prompt.test.ts`
+  - Files: `apps/api/src/generate/prompts/fairsteer.prompt.ts`, `tests/unit/fairsteer-prompt.spec.ts`
+  - Completed: 2026-03-31 — Added DSV few-shot (contrastive pairs, np.mean diff, PCA(n_components=2) scatter with red/green clusters + DSV arrow) and DAS few-shot (forward_hook function, register_forward_hook, prob<0.5 conditional DSV addition, before/after comparison); 9 new unit tests (25 total); 227/227 vitest green; semgrep clean
 
 - [ ] Task 10: Sprint v6 smoke test and full suite verification (P1)
   - Acceptance: New `tests/e2e/sprint-v6-smoke.spec.ts` covers: (a) mode selector renders with "None" default, (b) switching to FairSteer shows info banner, (c) FairSteer mode sends correct `mode` field in request (intercept network), (d) mocked FairSteer notebook renders in ResultPanel with save-indicator; all existing Playwright tests (122+) and vitest tests (149+) still pass; semgrep clean, 0 npm audit vulnerabilities; screenshots `tests/screenshots/task10v6-01` through `task10v6-04`
