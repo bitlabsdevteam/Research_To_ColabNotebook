@@ -4,6 +4,10 @@ import { FigureExtractorService } from "../pdf-parser/figure-extractor.service";
 import { AiService } from "../ai/ai.service";
 import { NotebookBuilderService } from "../notebook/notebook-builder.service";
 import { validateNotebook } from "./notebook-validator";
+import {
+  validateFairSteerContent,
+  FAIRSTEER_CONTENT_RETRY_INSTRUCTION,
+} from "./fairsteer-content-validator";
 import { GenerationError } from "./generation-error";
 import { buildFairSteerPrompt } from "./prompts/fairsteer.prompt";
 
@@ -52,7 +56,13 @@ export class GenerateService {
     let lastError: Error | undefined;
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      const retryInstruction = attempt > 0 ? RETRY_INSTRUCTION : undefined;
+      // On retry: append structural retry instruction; if FairSteer content
+      // failed on the previous attempt, also append the content retry instruction.
+      const retryInstruction =
+        attempt > 0
+          ? RETRY_INSTRUCTION +
+            (mode === "fairsteer" ? "\n\n" + FAIRSTEER_CONTENT_RETRY_INSTRUCTION : "")
+          : undefined;
 
       try {
         const cells = await this.aiService.generateNotebook(
@@ -64,16 +74,31 @@ export class GenerateService {
         );
 
         const notebook = this.notebookBuilder.build(cells, figures);
-        const validation = validateNotebook(notebook);
 
-        if (!validation.valid) {
+        // Structural validation (nbformat, cells, cell_type, source, outputs)
+        const structural = validateNotebook(notebook);
+        if (!structural.valid) {
           lastError = new Error(
-            `Generated notebook is structurally invalid: ${validation.errors.join("; ")}`
+            `Generated notebook is structurally invalid: ${structural.errors.join("; ")}`
           );
           this.logger.warn(
-            `Attempt ${attempt + 1}/${MAX_ATTEMPTS} produced invalid notebook: ${lastError.message}`
+            `Attempt ${attempt + 1}/${MAX_ATTEMPTS} structural validation failed: ${lastError.message}`
           );
           continue; // retry
+        }
+
+        // Content validation — only for FairSteer mode
+        if (mode === "fairsteer") {
+          const content = validateFairSteerContent(notebook);
+          if (!content.valid) {
+            lastError = new Error(
+              `FairSteer notebook missing required Dream 7B code: ${content.missing.join(", ")}`
+            );
+            this.logger.warn(
+              `Attempt ${attempt + 1}/${MAX_ATTEMPTS} content validation failed: ${lastError.message}`
+            );
+            continue; // retry
+          }
         }
 
         return notebook; // success
@@ -86,8 +111,14 @@ export class GenerateService {
       }
     }
 
-    throw new GenerationError(
-      `Failed to generate a valid notebook after ${MAX_ATTEMPTS} attempts`
-    );
+    // Both attempts failed — surface the last error message
+    const finalMessage =
+      lastError instanceof GenerationError
+        ? lastError.message
+        : lastError?.message?.startsWith("FairSteer notebook missing")
+          ? lastError.message
+          : `Failed to generate a valid notebook after ${MAX_ATTEMPTS} attempts`;
+
+    throw new GenerationError(finalMessage);
   }
 }
