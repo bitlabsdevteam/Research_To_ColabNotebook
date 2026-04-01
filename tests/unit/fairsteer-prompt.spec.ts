@@ -1,5 +1,20 @@
 import { describe, it, expect } from "vitest";
 import { buildFairSteerPrompt } from "../../apps/api/src/generate/prompts/fairsteer.prompt";
+import type { ModelInfo } from "../../apps/api/src/generate/model-extractor.service";
+
+const dreamModelInfo: ModelInfo = {
+  name: "Dream-7B",
+  huggingfaceId: "Dream-org/Dream-v0-Instruct-7B",
+  isDiffusion: true,
+  modelClass: "AutoModel",
+};
+
+const llamaModelInfo: ModelInfo = {
+  name: "Llama-2-7B",
+  huggingfaceId: "meta-llama/Llama-2-7b-hf",
+  isDiffusion: false,
+  modelClass: "AutoModelForCausalLM",
+};
 
 const samplePaperText =
   "This paper presents Llama-2 7B. We evaluate on BBQ dataset for bias detection. The model is trained on social text corpora.";
@@ -150,6 +165,92 @@ describe("buildFairSteerPrompt", () => {
     it("system prompt shows comparison before/after DAS", () => {
       const { system } = buildFairSteerPrompt(samplePaperText);
       expect(system).toMatch(/before.*DAS|after.*DAS|before.*after/i);
+    });
+  });
+
+  // Task 4: Dream 7B model-aware prompt
+  describe("Dream 7B model-aware prompt (isDiffusion=true)", () => {
+    it("embeds the Dream HuggingFace repo ID in the system prompt", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("Dream-org/Dream-v0-Instruct-7B");
+    });
+
+    it("uses AutoModel (not AutoModelForCausalLM) for Dream 7B", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("AutoModel");
+      // Must NOT suggest AutoModelForCausalLM as the primary loader
+      expect(system).not.toMatch(/AutoModelForCausalLM\.from_pretrained/);
+    });
+
+    it("includes trust_remote_code=True for Dream 7B", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("trust_remote_code");
+    });
+
+    it("includes mask_token_id for non-mask position detection", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("mask_token_id");
+    });
+
+    it("uses mean-pool activation extraction (non_mask) for diffusion LMs", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("non_mask");
+    });
+
+    it("includes DiffusionState class for multi-step hook tracking", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("DiffusionState");
+    });
+
+    it("uses diffusion_generate() not model.generate()", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("diffusion_generate");
+    });
+
+    it("hooks on model.model.layers (DreamBaseModel path)", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("model.model.layers");
+    });
+
+    it("includes generation_tokens_hook_func for state tracking", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, dreamModelInfo);
+      expect(system).toContain("generation_tokens_hook_func");
+    });
+  });
+
+  describe("Autoregressive model prompt (isDiffusion=false)", () => {
+    it("uses last-token activation extraction for Llama", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, llamaModelInfo);
+      expect(system).toMatch(/\[:, -1, :\]|last.token/i);
+    });
+
+    it("embeds the Llama HuggingFace repo ID", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, llamaModelInfo);
+      expect(system).toContain("meta-llama/Llama-2-7b-hf");
+    });
+
+    it("does NOT include DiffusionState for autoregressive models", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, llamaModelInfo);
+      expect(system).not.toContain("DiffusionState");
+    });
+
+    it("does NOT include diffusion_generate for autoregressive models", () => {
+      const { system } = buildFairSteerPrompt(samplePaperText, llamaModelInfo);
+      expect(system).not.toContain("diffusion_generate");
+    });
+  });
+
+  describe("Backward compatibility — no modelInfo arg", () => {
+    it("buildFairSteerPrompt(text) still returns valid system/user without modelInfo", () => {
+      const result = buildFairSteerPrompt(samplePaperText);
+      expect(result).toHaveProperty("system");
+      expect(result).toHaveProperty("user");
+      expect(result.system.length).toBeGreaterThan(100);
+    });
+
+    it("fallback uses unknown/model as huggingfaceId", () => {
+      const result = buildFairSteerPrompt(samplePaperText);
+      expect(result.system).toContain("unknown/model");
     });
   });
 });

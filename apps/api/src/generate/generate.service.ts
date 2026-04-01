@@ -3,6 +3,7 @@ import { PdfParserService } from "../pdf-parser/pdf-parser.service";
 import { FigureExtractorService } from "../pdf-parser/figure-extractor.service";
 import { AiService } from "../ai/ai.service";
 import { NotebookBuilderService } from "../notebook/notebook-builder.service";
+import { ModelExtractorService } from "./model-extractor.service";
 import { validateNotebook } from "./notebook-validator";
 import {
   validateFairSteerContent,
@@ -25,7 +26,8 @@ export class GenerateService {
     private readonly pdfParser: PdfParserService,
     private readonly figureExtractor: FigureExtractorService,
     private readonly aiService: AiService,
-    private readonly notebookBuilder: NotebookBuilderService
+    private readonly notebookBuilder: NotebookBuilderService,
+    private readonly modelExtractor: ModelExtractorService
   ) {}
 
   async generate(
@@ -47,10 +49,12 @@ export class GenerateService {
     }
 
     // Determine prompt overrides based on mode
-    const promptOverrides =
-      mode === "fairsteer"
-        ? buildFairSteerPrompt(parsed.rawText ?? parsed.sections.map((s) => `${s.title}\n${s.content}`).join("\n\n"))
-        : undefined;
+    let promptOverrides: { system: string; user: string } | undefined;
+    if (mode === "fairsteer") {
+      const rawText = parsed.rawText ?? parsed.sections.map((s) => `${s.title}\n${s.content}`).join("\n\n");
+      const modelInfo = this.modelExtractor.extract(rawText);
+      promptOverrides = buildFairSteerPrompt(rawText, modelInfo);
+    }
 
     // 3 & 4. Generate + build + validate with up to MAX_ATTEMPTS retries
     let lastError: Error | undefined;

@@ -8,10 +8,13 @@ const mockExtract = vi.fn();
 const mockGenerateNotebook = vi.fn();
 const mockBuild = vi.fn();
 
+const mockModelExtract = vi.fn();
+
 const mockPdfParser = { parse: mockParse };
 const mockFigureExtractor = { extract: mockExtract };
 const mockAiService = { generateNotebook: mockGenerateNotebook };
 const mockNotebookBuilder = { build: mockBuild };
+const mockModelExtractor = { extract: mockModelExtract };
 
 const fakeSections = [
   { title: "Abstract", content: "A novel algorithm." },
@@ -49,6 +52,12 @@ beforeEach(async () => {
   mockExtract.mockResolvedValue(fakeFigures);
   mockGenerateNotebook.mockResolvedValue(fakeCells);
   mockBuild.mockReturnValue(fakeNotebook);
+  mockModelExtract.mockReturnValue({
+    name: "Unknown",
+    huggingfaceId: "unknown/model",
+    isDiffusion: false,
+    modelClass: "AutoModelForCausalLM",
+  });
 
   const mod = await import("../../apps/api/src/generate/generate.service");
   GenerateService = mod.GenerateService;
@@ -56,7 +65,8 @@ beforeEach(async () => {
     mockPdfParser,
     mockFigureExtractor,
     mockAiService,
-    mockNotebookBuilder
+    mockNotebookBuilder,
+    mockModelExtractor
   );
 });
 

@@ -92,6 +92,9 @@ async function createApp(mockCells: typeof VALID_CELLS) {
   const { FigureExtractorService } = await import(
     "../../apps/api/src/pdf-parser/figure-extractor.service"
   );
+  const { ModelExtractorService } = await import(
+    "../../apps/api/src/generate/model-extractor.service"
+  );
 
   const moduleFixture: TestingModule = await Test.createTestingModule({
     controllers: [GenerateController],
@@ -101,6 +104,7 @@ async function createApp(mockCells: typeof VALID_CELLS) {
       AiService,
       NotebookBuilderService,
       FigureExtractorService,
+      ModelExtractorService,
     ],
   })
     .overrideProvider(PdfParserService)

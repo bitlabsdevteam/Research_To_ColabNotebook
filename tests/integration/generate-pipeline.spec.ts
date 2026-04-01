@@ -59,10 +59,13 @@ describe("POST /generate — full pipeline", () => {
     const { FigureExtractorService } = await import(
       "../../apps/api/src/pdf-parser/figure-extractor.service"
     );
+    const { ModelExtractorService } = await import(
+      "../../apps/api/src/generate/model-extractor.service"
+    );
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [GenerateController],
-      providers: [GenerateService, PdfParserService, AiService, NotebookBuilderService, FigureExtractorService],
+      providers: [GenerateService, PdfParserService, AiService, NotebookBuilderService, FigureExtractorService, ModelExtractorService],
     })
       .overrideProvider(PdfParserService)
       .useValue({ parse: mockParse })

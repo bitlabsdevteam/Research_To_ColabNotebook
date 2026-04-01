@@ -34,7 +34,7 @@
   - Files: `apps/api/src/generate/fairsteer-content-validator.ts`, `apps/api/src/generate/generate.service.ts`, `tests/unit/fairsteer-content-validator.spec.ts`
   - Completed: 2026-04-01 — `validateFairSteerContent()` implemented with 10 regex-based token checks; `AutoModel` uses negative lookahead `/automodel(?!for)/` to distinguish from `AutoModelForCausalLM`; `FAIRSTEER_CONTENT_RETRY_INSTRUCTION` exported alongside validator; `GenerateService` wires content validation after structural validation for mode=fairsteer — retry appends both structural + content instructions; `GenerationError` surfaces missing terms in message; 14 unit tests (254/254 total); semgrep clean, 0 prod vulns
 
-- [ ] Task 4: Rewrite buildFairSteerPrompt for Dream 7B with full few-shot examples (P0)
+- [x] Task 4: Rewrite buildFairSteerPrompt for Dream 7B with full few-shot examples (P0)
   - Acceptance: `buildFairSteerPrompt(paperText: string, modelInfo: ModelInfo)` gains a second parameter with default `{ name: "Unknown", huggingfaceId: "unknown/model", isDiffusion: false, modelClass: "AutoModelForCausalLM" }`; the system prompt is rewritten to embed all three Dream 7B few-shot code examples below; `GenerateService` calls `this.modelExtractor.extract(parsed.rawText)` and passes `modelInfo` to `buildFairSteerPrompt`; vitest unit tests verify the prompt contains ALL required tokens from Task 3's validator list; the few-shot examples embedded in the system prompt MUST follow these exact patterns:
 
   **Load Model section (Dream 7B specific):**
@@ -144,6 +144,7 @@
   ```
 
   - Files: `apps/api/src/generate/prompts/fairsteer.prompt.ts`, `apps/api/src/generate/generate.service.ts`, `tests/unit/fairsteer-prompt.spec.ts`
+  - Completed: 2026-04-01 — `buildFairSteerPrompt(text, modelInfo?)` rewritten with dual architecture paths: isDiffusion=true → AutoModel+trust_remote_code+MASK_TOKEN_ID+mean-pool non_mask activations+DiffusionState+generation_tokens_hook_func+diffusion_generate+model.model.layers path; isDiffusion=false → AutoModelForCausalLM+last-token hs[:,-1,:]+standard register_forward_hook; huggingfaceId injected into both system prompt few-shots and user prompt Load Model instruction; GenerateService now injects ModelExtractorService and calls extract(rawText) before building promptOverrides; integration test modules updated to include ModelExtractorService provider; 15 new tests (269/269 total); semgrep clean, 0 prod vulns
 
 - [ ] Task 5: Add SSE streaming endpoint to NestJS (P0)
   - Acceptance: New `GET /generate/stream` endpoint in `GenerateController` using NestJS `@Sse()` decorator; accepts multipart `pdf` file (via `@UploadedFile()`) and `Authorization: Bearer <key>` header; reads `mode` from query param `?mode=fairsteer`; `GenerateService.generateStream(pdfBuffer, apiKey, mode)` returns `Observable<MessageEvent>` using RxJS `Subject`; the Observable emits events in this exact order:
