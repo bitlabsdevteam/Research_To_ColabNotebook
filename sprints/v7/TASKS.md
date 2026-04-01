@@ -7,7 +7,7 @@
   - Files: `apps/api/package.json`, `apps/api/package-lock.json`
   - Completed: 2026-04-01 — Root `package.json` `overrides` field added to force `path-to-regexp@^8.4.1` (patched version) across the workspace; `@nestjs/cli` upgrade alone was insufficient since the vulnerability was in the runtime dep `@nestjs/core`→`path-to-regexp@8.0.0-8.3.0`; before: 3 high severity (path-to-regexp GHSA-j3q9-mxjg-w52f, GHSA-27v5-c462-wpq7); after: `found 0 vulnerabilities`; `npx nest build` clean; 227/227 vitest green; semgrep clean
 
-- [ ] Task 2: Implement ModelExtractorService (P0)
+- [x] Task 2: Implement ModelExtractorService (P0)
   - Acceptance: New `apps/api/src/generate/model-extractor.service.ts` exports `ModelExtractorService` with method `extract(rawText: string): ModelInfo`; `ModelInfo` interface is `{ name: string; huggingfaceId: string; isDiffusion: boolean; modelClass: string }`; extraction rules (case-insensitive):
     - "dream" OR "diffusion language model" OR "masked diffusion" → `{ name: "Dream-7B", huggingfaceId: "Dream-org/Dream-v0-Instruct-7B", isDiffusion: true, modelClass: "AutoModel" }`
     - "llama-2" AND "7b" → `{ name: "Llama-2-7B", huggingfaceId: "meta-llama/Llama-2-7b-hf", isDiffusion: false, modelClass: "AutoModelForCausalLM" }`
@@ -16,6 +16,7 @@
     - fallback → `{ name: "Unknown", huggingfaceId: "unknown/model", isDiffusion: false, modelClass: "AutoModelForCausalLM" }`
   - Registered as provider in `GenerateModule`; vitest unit tests cover all 5 cases including "dream" detection and "masked diffusion" synonym
   - Files: `apps/api/src/generate/model-extractor.service.ts`, `apps/api/src/generate/generate.module.ts`, `tests/unit/model-extractor.spec.ts`
+  - Completed: 2026-04-01 — `ModelExtractorService.extract()` implemented with 4 ordered rules (Dream/diffusion first for priority, then Llama-3, Llama-2, Mistral, Unknown fallback); Dream detection triggers on "dream", "diffusion language model", or "masked diffusion" → `isDiffusion: true`, `modelClass: "AutoModel"`; registered in `GenerateModule`; 13 unit tests green (240/240 total); semgrep clean, npm audit --omit=dev 0 vulns
 
 - [ ] Task 3: Implement FairSteerContentValidator (P0)
   - Acceptance: New `apps/api/src/generate/fairsteer-content-validator.ts` exports `validateFairSteerContent(notebook: object): { valid: boolean; missing: string[] }`; it concatenates the `source` field of all notebook cells into a single string, then checks (case-insensitive) for ALL of the following required tokens:
