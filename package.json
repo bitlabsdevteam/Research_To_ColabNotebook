@@ -10,6 +10,9 @@
     "lint": "turbo run lint",
     "test": "turbo run test"
   },
+  "overrides": {
+    "path-to-regexp": "^8.4.1"
+  },
   "devDependencies": {
     "@nestjs/common": "^11.1.17",
     "@nestjs/core": "^11.1.17",
